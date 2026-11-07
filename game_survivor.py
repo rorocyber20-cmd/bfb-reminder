@@ -101,6 +101,10 @@ class SurvivorMixin:
         box.add_widget(self.label(self.ls('mode_hint', 15), fs=15, color=app.muted_color))
         box.add_widget(self.button(self.ls('solo', 16, 100), lambda: self.go(solo_stage)))
         box.add_widget(self.button(self.ls('survivor', 16, 100), lambda: self.ls_open(kind)))
+        if getattr(self, 'dl_open', None) is not None:
+            from game_duel import DL
+            en, ar = DL['duel_btn']
+            box.add_widget(self.button(self.pair(en, ar, 16, 100), lambda: self.dl_open(kind)))
         box.add_widget(self.button(self.ls('menu', 15, 100), lambda: self.go('menu'), gray=True))
 
     def ls_open(self, kind):
