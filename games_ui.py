@@ -47,6 +47,8 @@ FakeTimerMixin, FAKE_OK = _safe_import('game_fake', 'FakeTimerMixin', ['ft_init'
 SurvivorMixin, SURV_OK = _safe_import('game_survivor', 'SurvivorMixin', ['ls_init'])
 BombMixin, BOMB_OK = _safe_import('game_bomb', 'BombMixin', ['bc_init'])
 OutbreakMixin, OB_OK = _safe_import('game_outbreak', 'OutbreakMixin', ['ob_init'])
+DuelMixin, DUEL_OK = _safe_import('game_duel', 'DuelMixin', ['dl_init'])
+FavMixin, FAV_OK = _safe_import('game_fav', 'FavMixin', ['fav_init'])
 
 try:
     from game_tools import ToolsMixin
@@ -161,6 +163,7 @@ S = {
     'ob_title': ('Who is infected?', 'من المصاب؟'),
     'ob_desc': ('4+ players on one phone. Find the secret infected player before they eliminate everyone. Optional Doctor.',
                 'من 4 لاعبين على هاتف واحد. اكتشفوا المصاب السري قبل أن يقصي الجميع. مع طبيب اختياري.'),
+    'fav_head': ('Favorites', 'المفضلة'),
     'bc_title': ('Bomb Code', 'كود القنبلة'),
     'bc_desc': ('Cut a wire in 5 seconds. One wire blows up the bomb. Last player standing wins.',
                 'اقطع سلكًا في 5 ثوانٍ. سلك واحد يفجّر القنبلة. آخر لاعب يبقى يفوز.'),
@@ -260,7 +263,7 @@ def share_text(text):
 
 
 class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixin,
-                  SurvivorMixin, BombMixin, OutbreakMixin, ToolsMixin, Screen):
+                  SurvivorMixin, BombMixin, OutbreakMixin, DuelMixin, FavMixin, ToolsMixin, Screen):
     title_text = StringProperty('')
     lang_label = StringProperty('')
 
@@ -294,6 +297,8 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
         self.ls_init()
         self.bc_init()
         self.ob_init()
+        self.dl_init()
+        self.fav_init()
         self.cat = None
         self.tools_init()
 
@@ -454,7 +459,7 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
     def capture(self):
         """يحفظ ما كتبه المستخدم قبل إعادة بناء الشاشة."""
         self.stop_anim()
-        for fn in ('ft_stop', 'ls_stop', 'bc_stop', 'ob_stop'):
+        for fn in ('ft_stop', 'ls_stop', 'bc_stop', 'ob_stop', 'dl_stop'):
             getattr(self, fn, lambda: None)()
         self.snapshot()
         self._name_ti = None
@@ -480,7 +485,7 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
             box.add_widget(self.label(traceback.format_exc(), fs=11, halign='left'))
         self.ids.scroll.scroll_y = 1
         # في لعبة المؤقت المخادع نمنع التمرير كي لا يتأخر وصول اللمسة للأزرار
-        self.ids.scroll.do_scroll_y = self.stage != 'ft_play'
+        self.ids.scroll.do_scroll_y = self.stage not in ('ft_play', 'dl_play')
 
     def go(self, stage):
         self.capture()
@@ -499,10 +504,40 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
         self.render()
 
     # ---------- قائمة الألعاب ----------
+    def game_card(self, box, gid, tkey, dkey):
+        """بطاقة لعبة: العنوان مع نجمة المفضلة، ثم الوصف وزر اللعب."""
+        app = App.get_running_app()
+        halign = 'right' if self.is_ar() else 'left'
+        card = Factory.GiftCard()
+        title = self.label(self.tx(tkey, 18, 130), fs=18, bold=True, halign=halign)
+        if FAV_OK:
+            row = BoxLayout(size_hint_y=None, height=dp(40))
+            title.bind(height=lambda inst, h: setattr(row, 'height', max(h, dp(40))))
+            star = self.fav_star(gid)
+            if self.is_ar():
+                row.add_widget(star)
+                row.add_widget(title)
+            else:
+                row.add_widget(title)
+                row.add_widget(star)
+            card.add_widget(row)
+        else:
+            card.add_widget(title)
+        card.add_widget(self.label(self.tx(dkey, 13, 90), fs=13, color=app.muted_color,
+                                   halign=halign))
+        card.add_widget(self.button(self.tx('play', 16, 100), lambda g=gid: self.open_game(g)))
+        box.add_widget(card)
+
     def show_menu(self, box):
         app = App.get_running_app()
         halign = 'right' if self.is_ar() else 'left'
         if self.cat is None:
+            favs = [g for gid in getattr(self, 'favs', []) for g in GAMES if g[0] == gid]
+            if favs:
+                box.add_widget(self.label(self.tx('fav_head', 20, 60), fs=20, bold=True,
+                                          color=app.primary_color))
+                for gid, tkey, dkey, cid in favs:
+                    self.game_card(box, gid, tkey, dkey)
             box.add_widget(self.label(self.tx('choose_cat', 20, 60), fs=20, bold=True,
                                       color=app.primary_color))
             for cid, tkey, dkey in CATS:
@@ -523,13 +558,7 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
         for gid, tkey, dkey, cid in GAMES:
             if cid != self.cat:
                 continue
-            card = Factory.GiftCard()
-            card.add_widget(self.label(self.tx(tkey, 18, 90), fs=18, bold=True, halign=halign))
-            card.add_widget(self.label(self.tx(dkey, 13, 90), fs=13, color=app.muted_color,
-                                       halign=halign))
-            card.add_widget(self.button(self.tx('play', 16, 100),
-                                        lambda g=gid: self.open_game(g)))
-            box.add_widget(card)
+            self.game_card(box, gid, tkey, dkey)
         box.add_widget(self.button(self.tx('all_cats', 15, 100), lambda: self.open_cat(None),
                                    gray=True))
 
