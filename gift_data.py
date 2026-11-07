@@ -12,8 +12,8 @@ TAG_NAMES = {
     'read': ('Reading & learning', 'القراءة والتعلّم'),
     'food': ('Food & cooking', 'الطعام والطبخ'),
     'art': ('Art & crafts', 'الفن والأعمال اليدوية'),
-    'music': ('Music', 'الموسيقى'),
     'gaming': ('Gaming', 'الألعاب'),
+    'anime': ('Anime & manga', 'الأنمي والمانغا'),
     'travel': ('Travel & outdoors', 'السفر والطبيعة'),
     'home': ('Home & decor', 'المنزل والديكور'),
     'faith': ('Religion', 'الدين'),
@@ -40,18 +40,19 @@ NO_COL = {'partner', 'parent', 'sibling', 'friend', 'relative'}
 
 GIFTS = [
     # --- تقنية ---
-    ('earbuds', 'Wireless earbuds', 'سماعات أذن لاسلكية', None, 'tya', 2, 'tech music practical', ALL),
+    ('earbuds', 'Wireless earbuds', 'سماعات أذن لاسلكية', None, 'tya', 2, 'tech practical', ALL),
     ('powerbank', 'Power bank', 'شاحن متنقل (باور بانك)', None, 'tyas', 1, 'tech practical', ALL),
     ('smartwatch', 'Smart watch', 'ساعة ذكية', None, 'tya', 3, 'tech sport luxury', ALL),
     ('fitband', 'Fitness tracker band', 'سوار تتبّع اللياقة', None, 'tya', 2, 'tech sport practical', ALL),
-    ('btspeaker', 'Bluetooth speaker', 'مكبّر صوت بلوتوث', None, 'tya', 2, 'tech music fun social', ALL),
+    ('btspeaker', 'Bluetooth speaker', 'مكبّر صوت بلوتوث', None, 'tya', 2, 'tech fun social', ALL),
     ('phonecase', 'Custom phone case with a photo or name', 'غطاء هاتف مخصص بصورة أو اسم', None, 'ty', 1, 'tech personal sentimental fun', ALL),
     ('wirelesscharger', 'Wireless charging stand', 'حامل شحن لاسلكي', None, 'tya', 2, 'tech practical', ALL),
     ('ereader', 'E-book reader', 'قارئ كتب إلكترونية', None, 'ya', 3, 'read tech calm homebody', ALL),
     ('ledlights', 'Smart LED room lights', 'إضاءة LED ذكية للغرفة', None, 'tya', 1, 'tech home fun creative', ALL),
     ('gamingheadset', 'Gaming headset', 'سماعة رأس للألعاب', None, 'ty', 2, 'gaming tech', ALL),
     ('controller', 'Game controller', 'يد تحكّم للألعاب', None, 'tya', 2, 'gaming tech fun', ALL),
-    ('gamecard', 'Game store gift card', 'بطاقة رصيد لمتجر ألعاب', None, 'tya', 1, 'gaming fun practical', ALL),
+    ('gamecard', 'PlayStation / Xbox / Steam gift card', 'بطاقة رصيد PlayStation / Xbox / Steam', None, 'tya', 1, 'gaming fun practical', ALL),
+    ('headphones', 'Noise-cancelling headphones', 'سماعات عازلة للضجيج', None, 'tya', 3, 'tech luxury practical', ALL),
     # --- جمال وموضة ---
     ('perfume_f', 'Perfume for her', 'عطر نسائي', 'f', 'tyas', 2, 'beauty fragrance luxury', NO_COL),
     ('perfume_m', 'Cologne for him', 'عطر رجالي', 'm', 'tyas', 2, 'beauty fragrance luxury', NO_COL),
@@ -80,7 +81,7 @@ GIFTS = [
     ('bookseries', 'Bestselling book series', 'سلسلة كتب شهيرة', None, 'tya', 2, 'read calm homebody', ALL),
     ('notebook', 'Notebook and nice pen', 'دفتر أنيق مع قلم', None, 'tya', 1, 'read creative practical', ALL),
     ('readlamp', 'Reading lamp', 'مصباح قراءة', None, 'yas', 1, 'read home calm homebody', ALL),
-    ('course', 'Online course subscription', 'اشتراك في دورة تعليمية', None, 'tya', 2, 'read tech practical', ALL),
+    ('course', 'Online course (language or skill)', 'دورة تعليمية أونلاين (لغة أو مهارة)', None, 'tya', 2, 'read tech practical', ALL),
     ('langapp', 'Language-learning subscription', 'اشتراك لتعلّم لغة', None, 'tya', 1, 'read tech practical', ALL),
     ('kidbooks', 'Illustrated story books', 'كتب قصص مصوّرة', None, 'c', 1, 'read fun calm', ALL),
     # --- طعام وطبخ ---
@@ -88,21 +89,16 @@ GIFTS = [
     ('dates', 'Dates and nuts gift basket', 'سلة تمور ومكسّرات', None, 'tyas', 1, 'food sweets faith practical', ALL),
     ('coffeeset', 'Coffee set', 'طقم قهوة', None, 'yas', 2, 'food home calm luxury', ALL),
     ('teaset', 'Fine tea gift set', 'مجموعة شاي فاخر', None, 'yas', 1, 'food calm home', ALL),
-    ('airfryer', 'Air fryer or blender', 'قلاية هوائية أو خلاط', None, 'yas', 3, 'food practical home', ALL),
+    ('airfryer', 'Air fryer or blender', 'قلاية هوائية أو خلاط', None, 'yas', 2, 'food practical home', ALL),
     ('bakingset', 'Baking tools set', 'طقم أدوات الحلويات', None, 'tya', 1, 'food creative home', ALL),
     ('honey', 'Honey basket', 'سلة عسل', None, 'as', 1, 'food home practical', ALL),
     ('customcake', 'Custom birthday cake', 'كعكة عيد ميلاد مخصصة', None, 'ctyas', 1, 'food sweets fun social', ALL),
     # --- فن وإبداع ---
     ('sketch', 'Sketching and drawing set', 'طقم رسم وتخطيط', None, 'cty', 1, 'art creative calm', ALL),
     ('paintnum', 'Paint-by-numbers canvas', 'لوحة تلوين بالأرقام', None, 'tya', 1, 'art creative calm homebody', ALL),
-    ('instantcam', 'Instant camera', 'كاميرا فورية', None, 'tya', 3, 'art tech fun creative social sentimental', ALL),
+    ('instantcam', 'Instant camera', 'كاميرا فورية', None, 'tya', 2, 'art tech fun creative social sentimental', ALL),
     ('portrait', 'Hand-drawn portrait', 'بورتريه مرسوم يدويًا', None, 'tya', 2, 'art sentimental personal', ALL),
     ('diykit', 'DIY craft kit', 'مجموعة أعمال يدوية', None, 'cty', 1, 'creative art fun', ALL),
-    # --- موسيقى ---
-    ('headphones', 'Over-ear headphones', 'سماعة رأس عالية الجودة', None, 'tya', 3, 'music tech luxury', ALL),
-    ('ukulele', 'Ukulele or a small instrument', 'يوكليلي أو آلة موسيقية صغيرة', None, 'tya', 2, 'music creative fun', ALL),
-    ('musicsub', 'Music streaming subscription', 'اشتراك في منصة موسيقى', None, 'tya', 1, 'music tech practical', ALL),
-    ('karaoke', 'Karaoke microphone', 'ميكروفون كاريوكي', None, 'ct', 1, 'music fun social', ALL),
     # --- ألعاب جماعية وتركيب ---
     ('boardgame', 'Board game for friends and family', 'لعبة جماعية (بورد غيم)', None, 'ctya', 1, 'fun social gaming', ALL),
     ('puzzle', 'Jigsaw puzzle', 'أحجية تركيب (بازل)', None, 'ctyas', 1, 'calm homebody fun', ALL),
@@ -129,7 +125,7 @@ GIFTS = [
     ('misbaha', 'Prayer beads (misbaha)', 'مسبحة', None, 'tyas', 1, 'faith sentimental', ALL),
     ('islamicbook', 'Islamic book', 'كتاب إسلامي', None, 'tyas', 1, 'faith read calm', ALL),
     # --- أطفال ---
-    ('plush', 'Plush toy', 'دمية قطنية', None, 'c', 1, 'fun sentimental', ALL),
+    ('plush', 'Small teddy bear or plush toy', 'دبدوب صغير أو دمية قطنية', None, 'ctyas', 1, 'fun sentimental', ALL),
     ('rccar', 'Remote-control car', 'سيارة تحكّم عن بعد', 'm', 'ct', 2, 'fun gaming', ALL),
     ('doll', 'Doll with accessories', 'دمية مع إكسسواراتها', 'f', 'c', 1, 'fun creative', ALL),
     ('colorset', 'Coloring and drawing set', 'أدوات تلوين ورسم', None, 'c', 1, 'art creative fun', ALL),
@@ -149,6 +145,77 @@ GIFTS = [
     ('familyframe', 'Family photo frame', 'إطار صورة عائلية', None, 'as', 1, 'sentimental personal home', {'parent', 'relative', 'sibling'}),
     ('traditionaltea', 'Traditional tea set', 'طقم شاي تقليدي', None, 'as', 2, 'food home faith sentimental', ALL),
     ('qurandstand', 'Wooden Quran stand', 'حامل مصحف خشبي', None, 'yas', 1, 'faith home practical', ALL),
+    # --- اشتراكات ---
+    ('netmonth', 'Monthly internet subscription', 'اشتراك إنترنت شهري', None, 'tyas', 1, 'tech practical', ALL),
+    ('netyear', 'Annual internet subscription', 'اشتراك إنترنت سنوي', None, 'tyas', 2, 'tech practical', ALL),
+    ('streammonth', 'Monthly streaming subscription (Netflix / Shahid)', 'اشتراك شهري في منصة مشاهدة (Netflix / Shahid)', None, 'tya', 1, 'tech fun homebody', ALL),
+    ('streamyear', 'Annual streaming subscription (Netflix / Shahid)', 'اشتراك سنوي في منصة مشاهدة (Netflix / Shahid)', None, 'tya', 2, 'tech fun homebody', ALL),
+    # --- متوسطة جديدة ---
+    ('kbmouse', 'Gaming keyboard and mouse', 'لوحة مفاتيح وماوس للألعاب', None, 'ty', 2, 'gaming tech practical', ALL),
+    ('campset', 'Tent and camping gear', 'خيمة ومعدات تخييم', None, 'tya', 2, 'adventurous travel practical', ALL),
+    ('smartspeaker', 'Smart speaker', 'مكبّر صوت ذكي', None, 'tya', 2, 'tech home practical', ALL),
+    # --- غالية ---
+    # --- شائعة: للجميع ---
+    ('teddybig', 'Big teddy bear', 'دبدوب كبير', None, 'ctyas', 2, 'sentimental fun home', NO_COL),
+    ('stickers', 'Anime sticker pack', 'ستيكرات أنمي', None, 'tya', 1, 'anime fun creative', ALL),
+    ('animefigure', 'Anime figure', 'تمثال أنمي (Figure)', None, 'tya', 2, 'anime fun art', ALL),
+    ('animeposter', 'Anime wall poster', 'ملصق جداري أنمي', None, 'tya', 1, 'anime home art', ALL),
+    ('manga', 'Manga or comic books', 'مانغا أو قصص مصوّرة', None, 'ctya', 1, 'anime read fun calm homebody', ALL),
+    ('animehoodie', 'Anime hoodie or T-shirt', 'هودي أو تيشيرت أنمي', None, 'tya', 2, 'anime fun', ALL),
+    ('keychain', 'Keychain with their name', 'حلقة مفاتيح مخصصة باسمه', None, 'tyas', 1, 'personal sentimental fun', ALL),
+    ('photoshirt', 'T-shirt with their photo', 'تيشيرت بصورته', None, 'tya', 1, 'personal fun sentimental', ALL),
+    ('ledframe', 'LED photo frame', 'إطار صورة LED', None, 'tyas', 1, 'personal sentimental home creative', ALL),
+    ('balloons', 'Birthday balloon decoration set', 'زينة بالونات لعيد الميلاد', None, 'ctya', 1, 'fun social', ALL),
+    ('socks', 'Cozy cute socks', 'جوارب دافئة لطيفة', None, 'ctyas', 1, 'home calm homebody fun', ALL),
+    ('memories', 'Handwritten letter or a video of memories', 'رسالة بخط اليد أو فيديو ذكريات', None, 'tyas', 1, 'sentimental personal', {'partner', 'parent', 'sibling', 'friend', 'relative'}),
+    ('starmap', 'Star map of their birth night', 'خريطة النجوم ليلة ميلاده', None, 'ya', 2, 'sentimental personal art home', {'partner', 'friend', 'sibling'}),
+    ('digiframe', 'Digital photo frame', 'إطار صور رقمي', None, 'yas', 2, 'tech sentimental home personal', ALL),
+    # --- شائعة: للبنات ---
+    ('roseglass', 'Preserved rose in glass (lasts a year)', 'وردة محفوظة في زجاج (تدوم سنة)', 'f', 'tyas', 2, 'beauty sentimental luxury', NO_COL),
+    ('flowerchoc', 'Bouquet with chocolates', 'باقة ورد مع شوكولاتة', 'f', 'tyas', 2, 'sentimental sweets beauty', NO_COL),
+    ('hairacc', 'Hair accessories set', 'مجموعة إكسسوارات شعر', 'f', 'ctya', 1, 'beauty fun', ALL),
+    ('nailkit', 'Nail polish set', 'طقم طلاء أظافر', 'f', 'tya', 1, 'beauty fun creative', ALL),
+    ('jewelbox', 'Jewelry box', 'علبة مجوهرات', 'f', 'tyas', 2, 'beauty home luxury', ALL),
+    ('namenecklace', 'Name necklace', 'قلادة باسمها', 'f', 'tya', 2, 'beauty personal sentimental', NO_COL),
+    ('makeuporg', 'Makeup organizer', 'منظّم مكياج', 'f', 'tya', 2, 'beauty practical home', ALL),
+    ('ledmirror', 'LED makeup mirror', 'مرآة LED للمكياج', 'f', 'tya', 2, 'beauty tech practical', ALL),
+    ('bodymist', 'Body mist spray', 'بخاخ عطر للجسم', 'f', 'tya', 1, 'fragrance beauty', ALL),
+    ('hairtool', 'Hair dryer or straightener', 'مجففة أو مكواة شعر', 'f', 'tya', 2, 'beauty practical tech', ALL),
+    ('abaya', 'Abaya or kaftan', 'عباءة أو قفطان', 'f', 'yas', 2, 'beauty faith luxury', NO_COL),
+    ('pajamas', 'Elegant pajama set', 'بيجاما أنيقة', 'f', 'tyas', 2, 'home beauty homebody calm', ALL),
+    ('tote', 'Printed tote bag', 'حقيبة قماش مطبوعة', 'f', 'tya', 1, 'beauty practical fun', ALL),
+    ('koreancare', 'Korean skincare set', 'منتجات عناية كورية', 'f', 'tya', 2, 'beauty practical', ALL),
+    # --- شائعة: للأولاد ---
+    ('cards', 'Trading cards (Pokemon or football)', 'بطاقات تجميع (بوكيمون أو كرة قدم)', None, 'cty', 1, 'fun gaming sport anime', ALL),
+    ('rubik', "Rubik's cube", 'مكعب روبيك', None, 'ctya', 1, 'fun calm creative gaming', ALL),
+    ('footballboots', 'Football boots', 'حذاء كرة قدم', 'm', 'tya', 2, 'sport', ALL),
+    ('gamingchair', 'Gaming chair', 'كرسي ألعاب (Gaming chair)', None, 'tya', 3, 'gaming tech practical', ALL),
+    ('skateboard', 'Skateboard', 'سكيت بورد', None, 'ty', 2, 'sport fun adventurous', ALL),
+    ('fishing', 'Fishing set', 'طقم صيد', 'm', 'ya', 2, 'adventurous travel calm', ALL),
+    ('laptopbag', 'Laptop backpack', 'حقيبة ظهر للابتوب', None, 'tya', 2, 'tech practical', ALL),
+    ('belt', 'Leather belt', 'حزام جلدي', 'm', 'tyas', 1, 'beauty practical luxury', ALL),
+    ('carkit', 'Car accessories (phone holder, car perfume)', 'أدوات قيادة (حامل هاتف، عطر سيارة)', None, 'ya', 1, 'practical tech', ALL),
+    ('glovesshaker', 'Gym gloves and shaker bottle', 'قفازات رياضة مع شيكر', 'm', 'tya', 1, 'sport practical', ALL),
+    ('toolset', 'Tool set', 'طقم أدوات', 'm', 'as', 2, 'practical home', ALL),
+    ('mousepad', 'XL gaming mouse pad', 'بساط ماوس كبير للألعاب', None, 'tya', 1, 'gaming tech practical', ALL),
+    # --- شائعة: للأطفال ---
+    ('slime', 'Slime kit', 'طقم سلايم', None, 'c', 1, 'fun creative', ALL),
+    ('drawboard', 'Drawing board', 'سبورة رسم', None, 'c', 1, 'art creative fun', ALL),
+    ('kidbike', "Kid's bicycle", 'دراجة أطفال', None, 'c', 3, 'sport fun', ALL),
+    ('laptop', 'Laptop (study, work or gaming)', 'لابتوب (للدراسة أو العمل أو الألعاب)', None, 'tya', 3, 'tech practical read creative gaming', ALL),
+    ('tablet', 'Tablet', 'جهاز لوحي (تابلت)', None, 'tya', 3, 'tech read creative fun', ALL),
+    ('smartphone', 'Smartphone', 'هاتف ذكي', None, 'tyas', 3, 'tech practical social', ALL),
+    ('console', 'Game console (PlayStation / Xbox)', 'جهاز ألعاب (PlayStation / Xbox)', None, 'ty', 3, 'gaming tech fun social', ALL),
+    ('camera', 'Digital camera or action camera', 'كاميرا رقمية أو كاميرا حركة', None, 'tya', 3, 'tech art travel creative', ALL),
+    ('drone', 'Camera drone', 'طائرة مسيّرة بكاميرا (Drone)', None, 'y', 3, 'tech adventurous creative travel', ALL),
+    ('escooter', 'Electric scooter or e-bike', 'سكوتر أو دراجة كهربائية', None, 'ty', 3, 'tech sport fun adventurous', ALL),
+    ('homegym', 'Home exercise bike or treadmill', 'دراجة ثابتة أو مشّاية للمنزل', None, 'ya', 3, 'sport practical homebody', ALL),
+    ('goldjewelry', 'Gold jewelry', 'مجوهرات ذهبية', 'f', 'yas', 3, 'beauty luxury sentimental', NO_COL),
+    ('umrah', 'Umrah trip', 'رحلة عمرة', None, 'as', 3, 'faith sentimental travel', {'parent', 'relative', 'partner'}),
+    ('bigappliance', 'Big home appliance (washing machine, fridge, TV)', 'جهاز منزلي كبير (غسالة، ثلاجة، تلفاز)', None, 'as', 3, 'practical home', {'parent'}),
+    ('espresso', 'Espresso coffee machine', 'آلة قهوة إسبريسو', None, 'ya', 3, 'food home calm luxury', ALL),
+    ('leatherjacket', 'Premium leather jacket', 'جاكيت جلدي فاخر', None, 'ya', 3, 'beauty luxury practical', ALL),
+    ('projector', 'Home projector', 'جهاز عرض منزلي (Projector)', None, 'ya', 3, 'tech home fun homebody', ALL),
 ]
 
 # ---------------------------------------------------------------
@@ -165,8 +232,8 @@ INTERESTS = [
     ('read', 'Reading & learning', 'القراءة والتعلّم'),
     ('food', 'Food & cooking', 'الطعام والطبخ'),
     ('art', 'Art & crafts', 'الفن والأعمال اليدوية'),
-    ('music', 'Music', 'الموسيقى'),
     ('gaming', 'Gaming', 'الألعاب الإلكترونية'),
+    ('anime', 'Anime & manga', 'الأنمي والمانغا'),
     ('travel', 'Travel & outdoors', 'السفر والطبيعة'),
     ('home', 'Home & decor', 'المنزل والديكور'),
     ('faith', 'Religion', 'الدين'),
@@ -196,7 +263,7 @@ QUESTIONS = [
         ('low', 'Low – a small gift', 'منخفضة – هدية بسيطة'),
         ('mid', 'Medium', 'متوسطة'),
         ('high', 'High', 'مرتفعة'),
-        ('nolimit', 'No limit', 'بلا حدود'),
+        ('nolimit', 'No limit – any price, only their taste matters', 'بلا حدود – أي سعر، المهم تفضيلاته'),
     ]),
     ('interest1', 'What is their biggest interest?', 'ما أكبر اهتمام لديه؟', INTERESTS),
     ('interest2', 'Do they have a second interest?', 'هل لديه اهتمام ثانٍ؟',
@@ -264,7 +331,7 @@ QUESTION_COUNTS = (10, 15, 20)
 # ---------------------------------------------------------------
 # تحويل القائمة إلى قواميس
 # ---------------------------------------------------------------
-_BUDGET = {'low': 1, 'mid': 2, 'high': 3, 'nolimit': 3}
+_BUDGET = {'low': 1, 'mid': 2, 'high': 3, 'nolimit': None}   # None = بلا حدود: لا قيود ولا أفضلية للسعر
 
 
 def _gift(row):
@@ -295,15 +362,16 @@ def score_gift(g, p, strict=3):
         if gen and g['gender'] and g['gender'] != gen:
             return -1000.0, why
     u = _BUDGET.get(p.get('budget'), 2)
-    if g['budget'] > u:
+    if u is not None and g['budget'] > u:
         return -1000.0, why
 
-    # --- الميزانية ---
-    if g['budget'] == u:
-        s += 1.0
-        why.append('budget')
-    else:
-        s -= 0.5 * (u - g['budget'])
+    # --- الميزانية: نطاق مستهدف (متوسطة تفضّل المتوسط، مرتفعة تفضّل الغالي) ---
+    if u is not None:
+        if g['budget'] == u:
+            s += 1.5
+            why.append('budget')
+        else:
+            s -= 2.5 * (u - g['budget'])
 
     # --- الجنس ---
     if g['gender'] and g['gender'] == p.get('gender'):
@@ -394,7 +462,7 @@ def score_gift(g, p, strict=3):
     return s, why
 
 
-EXPERIENCE_IDS = {'daytrip', 'dinner', 'getaway'}
+EXPERIENCE_IDS = {'daytrip', 'dinner', 'getaway', 'umrah'}
 
 
 def recommend(profile, limit=10):
