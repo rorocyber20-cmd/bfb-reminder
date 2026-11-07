@@ -210,6 +210,8 @@ class GiftScreen(Screen):
             card = GiftCard()
             name = g['ar'] if self.is_ar() else g['en']
             card.add_widget(self.label(self.shape(name, 17, 90), fs=17, bold=True, halign=halign))
+            card.add_widget(self.label('$' * int(g['budget']), fs=14, bold=True,
+                                       color=app.primary_color, halign=halign))
             card.add_widget(self.label(self.why_text(r), fs=13, color=app.muted_color,
                                        halign=halign))
             box.add_widget(card)
