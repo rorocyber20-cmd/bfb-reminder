@@ -158,3 +158,8 @@ RIDDLES = [
      "Think about time, not names.", "فكّر في الزمن لا في الأسماء.",
      "Yesterday, today, tomorrow", "أمس واليوم وغدًا"),
 ]
+try:
+    from riddles_extra import NEW_RIDDLES
+    RIDDLES = RIDDLES + NEW_RIDDLES
+except Exception:
+    pass
