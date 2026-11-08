@@ -49,6 +49,8 @@ BombMixin, BOMB_OK = _safe_import('game_bomb', 'BombMixin', ['bc_init'])
 OutbreakMixin, OB_OK = _safe_import('game_outbreak', 'OutbreakMixin', ['ob_init'])
 DuelMixin, DUEL_OK = _safe_import('game_duel', 'DuelMixin', ['dl_init'])
 FavMixin, FAV_OK = _safe_import('game_fav', 'FavMixin', ['fav_init'])
+TugMixin, TUG_OK = _safe_import('game_tug', 'TugMixin', ['tug_init'])
+CharadesMixin, CG_OK = _safe_import('game_charades', 'CharadesMixin', ['cg_init'])
 
 try:
     from game_tools import ToolsMixin
@@ -167,6 +169,12 @@ S = {
     'bc_title': ('Bomb Code', 'كود القنبلة'),
     'bc_desc': ('Cut a wire in 5 seconds. One wire blows up the bomb. Last player standing wins.',
                 'اقطع سلكًا في 5 ثوانٍ. سلك واحد يفجّر القنبلة. آخر لاعب يبقى يفوز.'),
+    'tug_title': ('Tug of War', 'شد الحبل'),
+    'tug_desc': ('Two sides face each other on one phone and tap as fast as they can. 1 vs 1 or 2 vs 2.',
+                 'جانبان يتقابلان على هاتف واحد ويضغطان بأقصى سرعة. 1 ضد 1 أو 2 ضد 2.'),
+    'cg_title': ('Charades', 'التمثيل الصامت'),
+    'cg_desc': ('Act out words without speaking while your team guesses. 60 seconds per turn.',
+                'مثّل الكلمات بدون كلام وفريقك يخمّن. 60 ثانية لكل دور.'),
     'ft_title': ('Fake Timer', 'المؤقت المخادع'),
     'ft_desc': ('Fake signals try to trick you. Press only on the GREEN GO!',
                 'إشارات مزيفة تحاول خداعك. اضغط فقط عند انطلق! الخضراء.'),
@@ -238,6 +246,10 @@ if FAKE_OK:
     GAMES += [('faketimer', 'ft_title', 'ft_desc', 'quick')]
 if BOMB_OK:
     GAMES += [('bomb', 'bc_title', 'bc_desc', 'quick')]
+if TUG_OK:
+    GAMES += [('tug', 'tug_title', 'tug_desc', 'quick')]
+if CG_OK:
+    GAMES += [('charades', 'cg_title', 'cg_desc', 'friends')]
 if BRAIN_OK:
     GAMES += [('trivia', 'tv_title', 'tv_desc', 'brain'), ('riddles', 'rd_title', 'rd_desc', 'brain')]
 if TOOLS_OK:
@@ -263,7 +275,8 @@ def share_text(text):
 
 
 class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixin,
-                  SurvivorMixin, BombMixin, OutbreakMixin, DuelMixin, FavMixin, ToolsMixin, Screen):
+                  SurvivorMixin, BombMixin, OutbreakMixin, DuelMixin, FavMixin, TugMixin,
+                  CharadesMixin, ToolsMixin, Screen):
     title_text = StringProperty('')
     lang_label = StringProperty('')
 
@@ -299,6 +312,8 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
         self.ob_init()
         self.dl_init()
         self.fav_init()
+        self.tug_init()
+        self.cg_init()
         self.cat = None
         self.tools_init()
 
@@ -459,7 +474,7 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
     def capture(self):
         """يحفظ ما كتبه المستخدم قبل إعادة بناء الشاشة."""
         self.stop_anim()
-        for fn in ('ft_stop', 'ls_stop', 'bc_stop', 'ob_stop', 'dl_stop'):
+        for fn in ('ft_stop', 'ls_stop', 'bc_stop', 'ob_stop', 'dl_stop', 'tug_stop', 'cg_stop'):
             getattr(self, fn, lambda: None)()
         self.snapshot()
         self._name_ti = None
@@ -485,7 +500,7 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
             box.add_widget(self.label(traceback.format_exc(), fs=11, halign='left'))
         self.ids.scroll.scroll_y = 1
         # في لعبة المؤقت المخادع نمنع التمرير كي لا يتأخر وصول اللمسة للأزرار
-        self.ids.scroll.do_scroll_y = self.stage not in ('ft_play', 'dl_play')
+        self.ids.scroll.do_scroll_y = self.stage not in ('ft_play', 'dl_play', 'tug_play')
 
     def go(self, stage):
         self.capture()
@@ -590,6 +605,10 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
             self.go('bc_setup')
         elif gid == 'outbreak':
             self.go('ob_setup')
+        elif gid == 'tug':
+            self.go('tug_setup')
+        elif gid == 'charades':
+            self.go('cg_setup')
 
     # ---------- من يعرفني أكثر: الصفحة الأولى ----------
     def show_home(self, box):
