@@ -13,7 +13,9 @@ from kivy.uix.boxlayout import BoxLayout
 
 import brain_data as bd
 
-ANSWER_SECONDS = 5
+ANSWER_SECONDS = 5          # ثقافة عامة
+ANSWER_SECONDS_RIDDLE = 30  # ألغاز
+HINT_COST = 5               # التلميح ينقص 5 ثوانٍ
 READY_SECONDS = 3
 LOCK_SECONDS = 0.5
 TARGETS = (3, 5, 7)
@@ -32,9 +34,10 @@ DL = {
                  'الإجابة الصحيحة نقطة لك، والخاطئة أو عدم الإجابة نقطة لخصمك. '
                  'والضغط المبكر يكلّفك نقطة!'),
     'rules_rd': ('Both players see the same riddle. Press your button first, then say your answer out loud '
-                 'within 5 seconds. Then the answer is shown and BOTH players judge: right or wrong. '
+                 'within 30 seconds. You can use one hint (it takes 5 seconds off the clock). '
+                 'Then the answer is shown and BOTH players judge: right or wrong. '
                  'If you disagree, no point. Pressing too early costs you a point!',
-                 'يرى اللاعبان اللغز نفسه. اضغط زرّك أولًا ثم قل جوابك بصوت عالٍ خلال 5 ثوانٍ. '
+                 'يرى اللاعبان اللغز نفسه. اضغط زرّك أولًا ثم قل جوابك بصوت عالٍ خلال 30 ثانية. ويمكنك استعمال تلميح واحد يخصم 5 ثوانٍ. '
                  'ثم تظهر الإجابة ويحكم اللاعبان معًا: صحيحة أو خاطئة. '
                  'وإذا اختلفتما فلا نقطة. والضغط المبكر يكلّفك نقطة!'),
     'names_hint': ('Player names (optional)', 'أسماء اللاعبين (اختياري)'),
@@ -54,6 +57,7 @@ DL = {
     'answering': ('{name} is answering...', '{name} يجيب...'),
     'say': ('Say your answer out loud!', 'قل جوابك بصوت عالٍ!'),
     'done': ('I answered', 'أجبت'),
+    'hint': ('Hint (-5 s)', 'تلميح (-5 ث)'),
     'judge_q': ("Was {name}'s answer correct?", 'هل كانت إجابة {name} صحيحة؟'),
     'answer_is': ('Answer: {a}', 'الجواب: {a}'),
     'yes': ('Correct', 'صحيحة'),
@@ -109,6 +113,7 @@ class DuelMixin:
         self.dl_who = 0
         self.dl_votes = [None, None]
         self.dl_out = None
+        self.dl_hint = False
         self.dl_winner = None
         self.dl_ev = None
         self.dl_lock_ev = None
@@ -211,11 +216,25 @@ class DuelMixin:
         self.dl_lock = True
         self.dl_votes = [None, None]
         self.dl_out = None
+        self.dl_hint = False
         self.go('dl_play')
 
     def dl_q_text(self, fs=15):
         it = self.dl_item
         return self.pair(it[0], it[1], fs, 40)
+
+    def dl_hint_text(self):
+        it = self.dl_item
+        return self.pair(it[2], it[3], 14, 40)
+
+    def dl_use_hint(self):
+        """تلميح واحد لكل لغز: ينقص 5 ثوانٍ (ثانية واحدة على الأقل) ويظهر للاعبين معًا."""
+        if self.dl_hint or self.dl_phase != 'answer':
+            return
+        self.dl_hint = True
+        self.dl_left = max(1, self.dl_left - HINT_COST)
+        self.dl_stop()
+        self.go('dl_play')
 
     def dl_answer_text(self):
         it = self.dl_item
@@ -299,15 +318,26 @@ class DuelMixin:
                 else:
                     items.append(self.dl_lbl(self.dt('say', 16, 60), fs=16, bold=True,
                                              color=HALF_BG[p]))
+                    if self.dl_hint:
+                        items.append(self.dl_lbl(self.dl_hint_text(), fs=14))
+                    else:
+                        hb = Factory.StyledButton(text=self.dt('hint', 14, 100))
+                        hb.custom_bg = LOCKED
+                        hb.height = dp(38)
+                        hb.bind(on_release=lambda inst: self.dl_use_hint())
+                        items.append(hb)
                     bt = Factory.StyledButton(text=self.dt('done', 16, 100))
                     bt.size_hint_y = 1
                     bt.bind(on_release=lambda inst: self.dl_to_judge())
                     items.append(bt)
                 return items
-            return [self.dl_head(p),
-                    self.dl_lbl(self.dt('answering', 18, 60, name=self.dl_nm(who)), fs=18, bold=True),
-                    self.dl_cd(str(max(0, self.dl_left)), fs=34),
-                    self.dl_lbl(self.dl_q_text(14), fs=14)]
+            other = [self.dl_head(p),
+                     self.dl_lbl(self.dt('answering', 18, 60, name=self.dl_nm(who)), fs=18, bold=True),
+                     self.dl_cd(str(max(0, self.dl_left)), fs=34),
+                     self.dl_lbl(self.dl_q_text(14), fs=14)]
+            if self.dl_kind == 'riddles' and self.dl_hint:
+                other.append(self.dl_lbl(self.dl_hint_text(), fs=14))
+            return other
         if ph == 'judge':
             who = self.dl_who
             items = [self.dl_lbl(self.dt('answer_is', 18, 60, a=self.dl_answer_text()), fs=18,
@@ -415,7 +445,7 @@ class DuelMixin:
             self.dl_stop()
             self.dl_who = p
             self.dl_phase = 'answer'
-            self.dl_left = ANSWER_SECONDS
+            self.dl_left = ANSWER_SECONDS if self.dl_kind == 'trivia' else ANSWER_SECONDS_RIDDLE
             self.go('dl_play')
 
     def dl_pick(self, oi):
