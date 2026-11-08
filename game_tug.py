@@ -11,8 +11,8 @@ from kivy.metrics import dp, sp
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 
-# عدد الضغطات الصافية (الفارق) اللازم للفوز
-NEED = {'1v1': 30, '2v2': 50}
+# عدد الضغطات الصافية (الفارق) اللازم للفوز: كلما قلّ كان الحبل أسرع وكل ضغطة أوضح
+NEED = {'1v1': 15, '2v2': 24}
 ZONE = 0.30          # ارتفاع منطقة كل فريق من ارتفاع اللوحة
 
 TG = {
