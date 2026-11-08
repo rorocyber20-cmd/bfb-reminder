@@ -9,7 +9,9 @@ from kivy.factory import Factory
 
 import brain_data as bd
 
-SECONDS = 15
+SECONDS = 15              # ثقافة عامة
+SECONDS_RIDDLE = 30       # ألغاز
+HINT_COST = 5             # التلميح ينقص 5 ثوانٍ من العداد
 GREEN = [0.15, 0.62, 0.30, 1]
 RED = [0.85, 0.22, 0.25, 1]
 
@@ -20,9 +22,9 @@ LS = {
     'solo': ('Solo mode', 'الوضع الفردي'),
     'survivor': ('Last Survivor (3+ players, one phone)', 'آخر ناجٍ (3 لاعبين فأكثر، هاتف واحد)'),
     'head': ('Last Survivor', 'آخر ناجٍ'),
-    'rules': ('Pass the phone around. Each player gets a question and has 15 seconds. '
+    'rules': ('Pass the phone around. Each player gets a question and has 15 seconds (30 for riddles, with one hint that costs 5 seconds). '
               'A wrong answer or running out of time puts you out. The last player standing wins!',
-              'مرّروا الهاتف بينكم. يحصل كل لاعب على سؤال ولديه 15 ثانية. '
+              'مرّروا الهاتف بينكم. يحصل كل لاعب على سؤال ولديه 15 ثانية (30 للألغاز، مع تلميح واحد يخصم 5 ثوانٍ). '
               'الإجابة الخاطئة أو انتهاء الوقت يُقصيك. آخر لاعب يبقى يفوز!'),
     'names_hint': ('Enter 3 to 8 player names, separated by commas.',
                    'أدخل من 3 إلى 8 أسماء لاعبين مفصولة بفواصل.'),
@@ -34,6 +36,7 @@ LS = {
     'ready': ('I am ready', 'أنا جاهز'),
     'turn': ("{name}'s turn", 'دور {name}'),
     'reveal': ('Reveal the answer', 'اكشف الجواب'),
+    'hint': ('Hint (-5 s)', 'تلميح (-5 ث)'),
     'answer': ('Answer: {a}', 'الجواب: {a}'),
     'judge': ('Was the answer correct?', 'هل كانت الإجابة صحيحة؟'),
     'yes': ('Correct', 'صحيحة'),
@@ -73,6 +76,7 @@ class SurvivorMixin:
         self.ls_ev = None
         self.ls_res = 'ok'
         self.ls_revealed = False
+        self.ls_hint = False
         self._ls_lbl = None
 
     def ls_stop(self):
@@ -166,8 +170,9 @@ class SurvivorMixin:
             random.shuffle(self.ls_order)
         else:
             self.ls_item = bd.RIDDLES[idx]
-        self.ls_left = SECONDS
+        self.ls_left = SECONDS if self.ls_kind == 'trivia' else SECONDS_RIDDLE
         self.ls_revealed = False
+        self.ls_hint = False
         self.ls_res = 'ok'
         self.go('ls_q')
 
@@ -192,6 +197,12 @@ class SurvivorMixin:
             card.add_widget(self.label(self.pair(it[0], it[1], 20, 90), fs=20, bold=True))
             box.add_widget(card)
             if not self.ls_revealed:
+                if self.ls_hint:
+                    box.add_widget(self.label(self.pair(it[2], it[3], 15, 60), fs=15,
+                                              color=app.muted_color))
+                else:
+                    box.add_widget(self.button(self.ls('hint', 15, 100), self.ls_use_hint,
+                                               gray=True))
                 box.add_widget(self.button(self.ls('reveal', 16, 100), self.ls_reveal))
                 running = True
             else:
@@ -222,6 +233,14 @@ class SurvivorMixin:
 
     def ls_pick(self, oi):
         self.ls_finish('ok' if oi == self.ls_item[3] else 'out')
+
+    def ls_use_hint(self):
+        """تلميح واحد لكل لغز: ينقص 5 ثوانٍ، ويبقى ثانية واحدة على الأقل."""
+        if self.ls_hint:
+            return
+        self.ls_hint = True
+        self.ls_left = max(1, self.ls_left - HINT_COST)
+        self.render()
 
     def ls_reveal(self):
         self.ls_stop()
