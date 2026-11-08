@@ -241,17 +241,42 @@ HELP_TEXT = {
         'footer': 'Reopen this window any time with the (i) button.',
         'sections': [
             ('games', 'Games', [
-                '10 games, no account needed. Pick a category, then a game.',
+                'No account needed. Pick a category, then a game. Tap the star '
+                'on a game to keep it in Favorites at the top.',
                 'Friends games work with codes: you send a code to a friend '
                 '(WhatsApp, SMS...) and they enter it on their phone.',
-                'Codes: BFB- is the Who knows me best game, BFBR- is its '
-                'result, BFBL- is Lie & Truth.',
+                'Codes: BFB- is Who knows me best, BFBR- is its result, '
+                'BFBL- is Two Truths and a Lie.',
                 'A received code works only once, so it cannot be pasted '
                 'again to cheat.',
                 'Results of Who knows me best are kept in the Results section.',
-                'Bomb Code: 3 to 8 players, 5 seconds each. When time runs '
-                'out, it explodes!',
-                'Last Survivor: 3 or more players, 15 seconds per question.',
+            ]),
+            ('onephone', 'One phone, many players', [
+                'Tug of War: lay the phone flat between the two sides. Team 2 '
+                'sits at the top of the screen. In 1 vs 1 each player has one '
+                'big button. In 2 vs 2 each player takes one half of the team '
+                'zone. Tap as fast as you can: every tap pulls the rope one '
+                'step, and the first to bring it to their end wins. One extra '
+                'tap can decide the round.',
+                'Charades: only the actor looks at the screen. Act out the '
+                'word without speaking while your team guesses. Press Correct '
+                'for each word guessed, or Skip to change it. 60 seconds per '
+                'turn.',
+                'Bomb Code: 3 to 8 players, 5 seconds each. Cut the wrong '
+                'wire or run out of time and you are out.',
+                'Fake Timer: press only when you see the green GO! Ignore '
+                'the fake signals.',
+            ]),
+            ('brain', 'Brain games', [
+                'General Knowledge and Riddles: choose a mode first, solo, '
+                '1 vs 1, or Last Survivor.',
+                'Last Survivor: 3 or more players, 15 seconds per question. '
+                'Whoever answers wrong or too late is out.',
+                'Duel 1 vs 1: two players face to face on one phone. Press your '
+                'button first to answer. First to 3, 5 or 7 points wins.',
+                'Riddles in Last Survivor and Duel: 30 seconds. Tap Hint once '
+                'per riddle to see a clue, but it takes 5 seconds off the clock. '
+                'Solo mode has no timer.',
             ]),
             ('settings', 'Settings', [
                 'Theme and Accent color change how the whole app looks.',
@@ -285,7 +310,8 @@ HELP_TEXT = {
         'footer': 'يمكنك فتح هذه النافذة في أي وقت من زر (i).',
         'sections': [
             ('games', 'الألعاب', [
-                '10 ألعاب بدون حساب. اختر صنفًا ثم لعبة.',
+                'بدون حساب. اختر صنفًا ثم لعبة. اضغط النجمة على اللعبة '
+                'لتبقى في المفضلة أعلى القائمة.',
                 'ألعاب الأصدقاء تعمل بالأكواد: ترسل كودًا لصديقك '
                 '(واتساب، رسائل...) وهو يدخله في هاتفه.',
                 'الأكواد: BFB- لعبة من يعرفني أكثر، وBFBR- نتيجتها، '
@@ -293,9 +319,31 @@ HELP_TEXT = {
                 'الكود المستلم يُستعمل مرة واحدة فقط، فلا يمكن لصقه مجددًا '
                 'للغش.',
                 'نتائج من يعرفني أكثر تجدها في قسم النتائج.',
-                'كود القنبلة: من 3 إلى 8 لاعبين، 5 ثوانٍ لكل لاعب. '
-                'وإذا انتهى الوقت تنفجر!',
-                'آخر ناجٍ: 3 لاعبين أو أكثر، و15 ثانية لكل سؤال.',
+            ]),
+            ('onephone', 'هاتف واحد وعدة لاعبين', [
+                'شد الحبل: ضعوا الهاتف مسطحًا بين الطرفين. الفريق 2 يجلس '
+                'في أعلى الشاشة. في 1 ضد 1 لكل لاعب زر كبير. وفي 2 ضد 2 '
+                'كل لاعب يأخذ نصف منطقة فريقه. اضغط بأسرع ما تستطيع: كل '
+                'ضغطة تشدّ الحبل خطوة، ومن يوصله إلى طرفه يفوز. ضغطة زائدة '
+                'واحدة قد تحسم الجولة.',
+                'التمثيل الصامت: الممثل وحده ينظر إلى الشاشة. يمثّل الكلمة '
+                'بدون كلام وفريقه يخمّن. اضغط «صح» عند كل كلمة تم تخمينها، '
+                'أو «تخطّى» لتغييرها. لكل دور 60 ثانية.',
+                'كود القنبلة: من 3 إلى 8 لاعبين، 5 ثوانٍ لكل لاعب. من قطع '
+                'السلك الخطأ أو انتهى وقته يخرج.',
+                'المؤقت المخادع: اضغط فقط عند ظهور انطلق! الخضراء، '
+                'وتجاهل الإشارات المزيفة.',
+            ]),
+            ('brain', 'ألعاب العقل', [
+                'ثقافة عامة وألغاز: اختر الوضع أولًا، فردي، أو 1 ضد 1، '
+                'أو آخر ناجٍ.',
+                'آخر ناجٍ: 3 لاعبين أو أكثر، و15 ثانية لكل سؤال. من أخطأ '
+                'أو تأخر يخرج.',
+                'مواجهة 1 ضد 1: لاعبان وجهًا لوجه على هاتف واحد. اضغط زرّك '
+                'أولًا لتجيب. من يصل إلى 3 أو 5 أو 7 نقاط يفوز.',
+                'الألغاز في آخر ناجٍ والمواجهة: 30 ثانية. اضغط تلميح مرة واحدة '
+                'لكل لغز لترى دليلًا، لكنه يخصم 5 ثوانٍ من العداد. الوضع '
+                'الفردي بلا عداد.',
             ]),
             ('settings', 'الإعدادات', [
                 'الثيم واللون يغيّران شكل التطبيق كله.',
