@@ -274,8 +274,8 @@ HELP_TEXT = {
                 'Whoever answers wrong or too late is out.',
                 'Duel 1 vs 1: two players face to face on one phone. Press your '
                 'button first to answer. First to 3, 5 or 7 points wins.',
-                'Riddles in Last Survivor and Duel: 30 seconds. Tap Hint once '
-                'per riddle to see a clue, but it takes 5 seconds off the clock. '
+                'Riddles in Last Survivor: 30 seconds. Tap Hint once per riddle '
+                'to see a clue, but it takes 5 seconds off the clock. '
                 'Solo mode has no timer.',
             ]),
             ('settings', 'Settings', [
@@ -341,9 +341,9 @@ HELP_TEXT = {
                 'أو تأخر يخرج.',
                 'مواجهة 1 ضد 1: لاعبان وجهًا لوجه على هاتف واحد. اضغط زرّك '
                 'أولًا لتجيب. من يصل إلى 3 أو 5 أو 7 نقاط يفوز.',
-                'الألغاز في آخر ناجٍ والمواجهة: 30 ثانية. اضغط تلميح مرة واحدة '
-                'لكل لغز لترى دليلًا، لكنه يخصم 5 ثوانٍ من العداد. الوضع '
-                'الفردي بلا عداد.',
+                'الألغاز في آخر ناجٍ: 30 ثانية. اضغط تلميح مرة واحدة لكل لغز '
+                'لترى دليلًا، لكنه يخصم 5 ثوانٍ من العداد. الوضع الفردي '
+                'بلا عداد.',
             ]),
             ('settings', 'الإعدادات', [
                 'الثيم واللون يغيّران شكل التطبيق كله.',
