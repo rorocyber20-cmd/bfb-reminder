@@ -688,6 +688,8 @@ class BFBApp(App):
     notify_hour = NumericProperty(9)
     status = StringProperty('')
     status_color = ListProperty([0.85, 0.2, 0.2, 1])
+    sound_on = BooleanProperty(True)
+    vibrate_on = BooleanProperty(True)
 
     def build(self):
         self.build_failed = False
@@ -698,6 +700,7 @@ class BFBApp(App):
             Window.softinput_mode = 'below_target'
             self.prefs = core.load_settings()
             self.apply_prefs()
+            self._sync_fx()
             kv_path = os.path.join(BASE_DIR, 'ui.kv')
             if not os.path.exists(kv_path):
                 files = ', '.join(sorted(os.listdir(BASE_DIR)))
@@ -770,6 +773,28 @@ class BFBApp(App):
         self.prefs['font_scale'] = round(float(value), 2)
         self.font_scale = round(float(value), 2)
         self._save_later()
+
+    # ---------- الصوت والاهتزاز ----------
+    def _sync_fx(self):
+        try:
+            import fx
+            self.sound_on = fx.is_on('sound')
+            self.vibrate_on = fx.is_on('vibrate')
+        except Exception:
+            pass
+
+    def toggle_fx(self, which):
+        try:
+            import fx
+            fx.set_on(which, not fx.is_on(which))
+            self._sync_fx()
+            if which == 'sound':
+                fx.play('ok')
+            else:
+                fx.buzz(80)
+        except Exception as e:
+            if core:
+                core.log(f"toggle fx: {e}")
 
     def toggle_notify(self, which):
         key = 'notify_week' if which == 'week' else 'notify_day'
