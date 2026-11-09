@@ -33,6 +33,7 @@ android.permissions = POST_NOTIFICATIONS, VIBRATE, WAKE_LOCK, INTERNET, SCHEDULE
 # python-for-android: النسخة القديمة v2024.01.21 لا تدعم API 36، فنستعمل develop مؤقتًا
 # (سنثبّته على رقم commit محدد بعد التأكد من نجاح البناء)
 p4a.branch = develop
+p4a.commit = 1c9a4b4f817847bd8505d972d1a0e6f965929a88
 
 [buildozer]
 
