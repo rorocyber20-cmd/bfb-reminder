@@ -5,7 +5,7 @@ package.name = bfbreminder
 package.domain = org.bfb
 
 source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,json,ttf
+source.include_exts = py,png,jpg,kv,atlas,json,ttf,wav
 
 version = 0.2
 
