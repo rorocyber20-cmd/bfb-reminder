@@ -1,0 +1,35 @@
+name: Check boot receiver support
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install buildozer (same as the real build)
+      run: pip install --upgrade "git+https://github.com/kivy/buildozer.git"
+
+    - name: Buildozer keys
+      run: |
+        BZ=$(python -c "import buildozer,os;print(os.path.dirname(buildozer.__file__))")
+        echo "== default.spec =="
+        grep -n "add_src\|broadcast_receivers\|extra_manifest\|add_aars\|gradle_dependencies\|p4a.commit\|release_artifact" "$BZ/default.spec" || true
+        echo "== android.py =="
+        grep -n "broadcast_receivers\|add_src\|extra-manifest\|extra_manifest\|p4a.commit\|--add-source\|--receiver" "$BZ/targets/android.py" || true
+
+    - name: python-for-android at the pinned commit
+      run: |
+        git clone -q https://github.com/kivy/python-for-android.git p4a
+        cd p4a
+        git checkout -q 1c9a4b4f817847bd8505d972d1a0e6f965929a88
+        echo "== toolchain args =="
+        grep -n "receiver\|add-source\|extra-manifest\|foreground-service" pythonforandroid/toolchain.py pythonforandroid/build.py pythonforandroid/bootstraps/common/build/build.py 2>/dev/null || true
+        echo "== manifest template =="
+        grep -n "receiver\|extra_manifest\|foregroundServiceType" pythonforandroid/bootstraps/common/build/templates/AndroidManifest.tmpl.xml || true
+        echo "== service java =="
+        ls pythonforandroid/bootstraps/common/build/templates/ || true
