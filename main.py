@@ -802,6 +802,28 @@ class BFBApp(App):
         if not self.prefs.get('help_seen'):
             self.show_help(first_run=True)
 
+    # ---------- رابط تيليغرام ----------
+    TELEGRAM_URL = 'https://t.me/bfbreminder'
+
+    def open_telegram(self):
+        """يفتح الرابط عبر تطبيق تيليغرام أو المتصفح (لا يحتاج صلاحية الإنترنت)."""
+        try:
+            if platform == 'android':
+                from jnius import autoclass
+                Intent = autoclass('android.content.Intent')
+                Uri = autoclass('android.net.Uri')
+                activity = autoclass('org.kivy.android.PythonActivity').mActivity
+                intent = Intent(Intent.ACTION_VIEW, Uri.parse(self.TELEGRAM_URL))
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                activity.startActivity(intent)
+            else:
+                import webbrowser
+                webbrowser.open(self.TELEGRAM_URL)
+        except Exception as e:
+            if core:
+                core.log(f"open telegram: {e}")
+            self.show_status("Could not open the link. Search for @bfbreminder in Telegram.")
+
     # ---------- التنقل ----------
     def go(self, screen_name):
         self.root.ids.sm.current = screen_name
