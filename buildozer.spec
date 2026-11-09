@@ -9,7 +9,7 @@ source.include_exts = py,png,jpg,kv,atlas,json,ttf
 
 version = 0.2
 
-requirements = python3==3.11.5,hostpython3==3.11.5,kivy==2.3.0,plyer,certifi,pyjnius,android,arabic-reshaper,python-bidi==0.4.2,six
+requirements = python3==3.11.5,hostpython3==3.11.5,kivy==2.3.1,plyer,certifi,pyjnius,android,arabic-reshaper,python-bidi==0.4.2,six
 
 orientation = portrait
 fullscreen = 0
@@ -22,16 +22,17 @@ presplash.filename = presplash.png
 android.presplash_color = #3919CB
 
 # Android
-android.api = 33
+android.api = 36
 android.minapi = 21
-android.ndk = 25b
+android.ndk = 28c
 android.archs = arm64-v8a
 android.accept_sdk_license = True
 android.allow_backup = True
 android.permissions = POST_NOTIFICATIONS, VIBRATE, WAKE_LOCK, INTERNET, SCHEDULE_EXACT_ALARM, USE_EXACT_ALARM, RECEIVE_BOOT_COMPLETED, FOREGROUND_SERVICE
 
-# تثبيت إصدار python-for-android
-p4a.branch = v2024.01.21
+# python-for-android: النسخة القديمة v2024.01.21 لا تدعم API 36، فنستعمل develop مؤقتًا
+# (سنثبّته على رقم commit محدد بعد التأكد من نجاح البناء)
+p4a.branch = develop
 
 [buildozer]
 
