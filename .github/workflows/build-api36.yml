@@ -43,7 +43,9 @@ jobs:
         sed -i 's/^android.api = .*/android.api = 36/' buildozer.spec
         sed -i 's/^android.ndk = .*/android.ndk = 28c/' buildozer.spec
         sed -i 's/^p4a.branch = .*/p4a.branch = develop/' buildozer.spec
-        grep -nE "^(android.api|android.ndk|android.minapi|p4a.branch)" buildozer.spec
+        # Kivy 2.3.0 does not compile with the clang of NDK r26+ (cgl_gl.c: incompatible function pointer types)
+        sed -i 's/kivy==2.3.0/kivy==2.3.1/' buildozer.spec
+        grep -nE "^(android.api|android.ndk|android.minapi|p4a.branch|requirements)" buildozer.spec
 
     - name: Build APK
       run: yes | buildozer -v android debug
