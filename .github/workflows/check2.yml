@@ -1,0 +1,32 @@
+name: Check boot support 2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Buildozer extra args
+      run: |
+        pip install --upgrade "git+https://github.com/kivy/buildozer.git"
+        BZ=$(python -c "import buildozer,os;print(os.path.dirname(buildozer.__file__))")
+        grep -n "extra_args\|p4a.extra" "$BZ/default.spec" "$BZ/targets/android.py" || echo "NO extra_args"
+
+    - name: p4a manifest and service
+      run: |
+        git clone -q https://github.com/kivy/python-for-android.git p4a
+        cd p4a
+        git checkout -q 1c9a4b4f817847bd8505d972d1a0e6f965929a88
+        echo "== where are manifests =="
+        find . -name "AndroidManifest*" | head
+        echo "== application xml in templates =="
+        grep -rn "extra_manifest_application_xml\|extra_manifest_application_arguments\|extra_manifest_xml" --include="*.xml" pythonforandroid | head
+        echo "== build.py help text =="
+        sed -n 1045,1066p pythonforandroid/bootstraps/common/build/build.py
+        echo "== Service.tmpl.java start() =="
+        grep -n "static\|startForeground\|startService\|class \|getDefaultNotification" pythonforandroid/bootstraps/common/build/templates/Service.tmpl.java
