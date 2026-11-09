@@ -12,6 +12,15 @@ from kivy.uix.boxlayout import BoxLayout
 
 import charades_data as cd
 
+try:
+    from fx import play as fx_play, buzz as fx_buzz
+except Exception:                      # الصوت اختياري: لا يجب أن يكسر اللعبة
+    def fx_play(*a, **k):
+        pass
+
+    def fx_buzz(*a, **k):
+        pass
+
 SECONDS = 60
 ROUND_CHOICES = (2, 3, 5)
 RED = [0.85, 0.22, 0.25, 1]
@@ -236,6 +245,8 @@ class CharadesMixin:
                 self._cg_timer.color = RED
         if left <= 0:
             self.cg_stop()
+            fx_play('end')
+            fx_buzz(300)
             self.cg_finish_turn()
             return False
         return True
@@ -252,11 +263,13 @@ class CharadesMixin:
             return
         self.cg_turn_pts += 1
         self.cg_scores[self.cg_cur_team()] += 1
+        fx_play('ok')
         self.cg_next_word()
 
     def cg_skip(self):
         if self.cg_left() <= 0:
             return
+        fx_play('skip')
         self.cg_next_word()
 
     def cg_finish_turn(self):
