@@ -11,6 +11,15 @@ from kivy.metrics import dp, sp
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 
+try:
+    from fx import play as fx_play, buzz as fx_buzz
+except Exception:                      # الصوت اختياري: لا يجب أن يكسر اللعبة
+    def fx_play(*a, **k):
+        pass
+
+    def fx_buzz(*a, **k):
+        pass
+
 # عدد الضغطات الصافية (الفارق) اللازم للفوز: كلما قلّ كان الحبل أسرع وكل ضغطة أوضح
 NEED = {'1v1': 15, '2v2': 24}
 ZONE = 0.30          # ارتفاع منطقة كل فريق من ارتفاع اللوحة
@@ -67,7 +76,8 @@ class TugArena(Widget):
             self._fin_top = Rectangle()
             self._fin_bot = Rectangle()
             Color(*app.text_color)
-            self._rope = Rectangle()
+            self._rope = Rectangle()          # الحبل: خط عمودي بين الفريقين
+            self._flag = Rectangle()          # شريط صغير يعبر الحبل عند موضع العقدة
             self._knot = Ellipse()
         for i in range(self._n):
             team = i % 2
@@ -117,10 +127,14 @@ class TugArena(Widget):
         self._fin_top.size = (self.width, dp(2))
         self._fin_bot.pos = (self.x, cy - half - dp(1))
         self._fin_bot.size = (self.width, dp(2))
-        self._rope.pos = (self.x, ky - dp(3))
-        self._rope.size = (self.width, dp(6))
-        self._knot.pos = (self.center_x - dp(15), ky - dp(15))
-        self._knot.size = (dp(30), dp(30))
+        # حبل عمودي يمتد من منطقة الفريق السفلي إلى منطقة الفريق العلوي
+        self._rope.pos = (self.center_x - dp(4), cy - half)
+        self._rope.size = (dp(8), 2 * half)
+        # شريط عرضي قصير + عقدة تنزلق على الحبل نحو الفريق الأقوى
+        self._flag.pos = (self.center_x - dp(36), ky - dp(5))
+        self._flag.size = (dp(72), dp(10))
+        self._knot.pos = (self.center_x - dp(17), ky - dp(17))
+        self._knot.size = (dp(34), dp(34))
 
     def set_knot(self, value):
         self.knot = value
@@ -282,7 +296,10 @@ class TugMixin:
         self.tug_pos = self.tug_n / need
         if self.tug_arena is not None:
             self.tug_arena.set_knot(self.tug_pos)
+        fx_play('tap', 0.5)
         if abs(self.tug_n) >= need:
+            fx_play('win')
+            fx_buzz(250)
             self.tug_live = False
             if self.tug_arena is not None:
                 self.tug_arena.active = False
