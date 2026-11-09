@@ -60,22 +60,68 @@ def set_on(which, value):
     _save()
 
 
+def _log(msg):
+    try:
+        import core
+        core.log('fx: ' + msg)
+    except Exception:
+        pass
+
+
+_pool = {'obj': None, 'ids': {}, 'tried': False}
+
+
+def _soundpool():
+    """على أندرويد نستعمل SoundPool: مباشر وسريع ولا يحتاج مكتبات صوت إضافية."""
+    if _pool['tried']:
+        return _pool['obj']
+    _pool['tried'] = True
+    try:
+        from kivy.utils import platform
+        if platform != 'android':
+            return None
+        from jnius import autoclass
+        Builder = autoclass('android.media.SoundPool$Builder')
+        AttrBuilder = autoclass('android.media.AudioAttributes$Builder')
+        attrs = AttrBuilder().setUsage(14).setContentType(4).build()   # USAGE_GAME, SONIFICATION
+        pool = Builder().setMaxStreams(6).setAudioAttributes(attrs).build()
+        d = os.path.join(_BASE, 'sounds')
+        names = [f[:-4] for f in os.listdir(d) if f.endswith('.wav')] if os.path.isdir(d) else []
+        if not names:
+            _log('sounds folder is missing or empty: ' + d)
+        for n in names:
+            _pool['ids'][n] = pool.load(os.path.join(d, n + '.wav'), 1)
+        _pool['obj'] = pool
+    except Exception as e:
+        _log('soundpool failed: ' + repr(e))
+        _pool['obj'] = None
+    return _pool['obj']
+
+
 def play(name, volume=0.8):
     """تشغيل مؤثر صوتي: tap, ok, bad, skip, win, end."""
     try:
         if not is_on('sound'):
             return
+        pool = _soundpool()
+        if pool is not None:
+            sid = _pool['ids'].get(name)
+            if sid:
+                pool.play(sid, volume, volume, 1, 0, 1.0)
+            return
         snd = _sounds.get(name)
         if snd is None:
             from kivy.core.audio import SoundLoader
             snd = SoundLoader.load(os.path.join(_BASE, 'sounds', name + '.wav'))
+            if not snd:
+                _log('SoundLoader could not load ' + name)
             _sounds[name] = snd or False
         if snd:
             snd.volume = volume
             snd.stop()
             snd.play()
-    except Exception:
-        pass
+    except Exception as e:
+        _log('play failed: ' + repr(e))
 
 
 def _vibrator():
