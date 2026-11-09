@@ -13,6 +13,15 @@ from kivy.uix.boxlayout import BoxLayout
 
 import brain_data as bd
 
+try:
+    from fx import play as fx_play, buzz as fx_buzz
+except Exception:                      # الصوت اختياري: لا يجب أن يكسر اللعبة
+    def fx_play(*a, **k):
+        pass
+
+    def fx_buzz(*a, **k):
+        pass
+
 ANSWER_SECONDS = 5
 READY_SECONDS = 3
 LOCK_SECONDS = 0.5
@@ -443,8 +452,11 @@ class DuelMixin:
         """actor: من أجاب (أو من ضغط مبكرًا). النقطة: صحيح → له، وغير ذلك → للخصم."""
         if kind == 'right':
             self.dl_scores[actor] += 1
+            fx_play('ok')
         elif kind in ('wrong', 'time', 'early'):
             self.dl_scores[1 - actor] += 1
+            fx_play('bad')
+            fx_buzz(200)
         self.dl_out = (kind, actor)
         self.dl_phase = 'result'
         self.go('dl_play')
