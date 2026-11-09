@@ -281,10 +281,13 @@ def notify_hour():
         return 9
 
 
-def check_and_notify():
+def check_and_notify(respect_hour=True):
     """يرسل إشعار قبل أسبوع وقبل يوم، مرة واحدة فقط لكل موعد.
+    لا يرسل شيئًا قبل الساعة المختارة في الإعدادات (يرسل بعدها في نفس اليوم إن فات الموعد).
     يرجع قائمة بأخطاء الإرسال (فارغة إن لم يحدث خطأ)."""
     errors = []
+    if respect_hour and datetime.now().hour < notify_hour():
+        return errors
     today_str = date.today().isoformat()
     notified = _read(NOTIFIED_FILE, {})
     changed = False
