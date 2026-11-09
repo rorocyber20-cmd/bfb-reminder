@@ -163,3 +163,10 @@ try:
     RIDDLES = RIDDLES + NEW_RIDDLES
 except Exception:
     pass
+
+# أسئلة ثقافة عامة إضافية (ملف trivia_extra.py)
+try:
+    from trivia_extra import TRIVIA_EXTRA
+    TRIVIA = TRIVIA + TRIVIA_EXTRA
+except Exception:
+    pass
