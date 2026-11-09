@@ -14,7 +14,7 @@ requirements = python3==3.11.5,hostpython3==3.11.5,kivy==2.3.1,plyer,certifi,pyj
 orientation = portrait
 fullscreen = 0
 
-services = reminder:service.py:foreground
+services = reminder:service.py:foreground:foregroundServiceType=specialUse
 
 # الأيقونة وشاشة التحميل
 icon.filename = icon.png
@@ -28,7 +28,7 @@ android.ndk = 28c
 android.archs = arm64-v8a
 android.accept_sdk_license = True
 android.allow_backup = True
-android.permissions = POST_NOTIFICATIONS, VIBRATE, WAKE_LOCK, INTERNET, SCHEDULE_EXACT_ALARM, USE_EXACT_ALARM, RECEIVE_BOOT_COMPLETED, FOREGROUND_SERVICE
+android.permissions = POST_NOTIFICATIONS, VIBRATE, WAKE_LOCK, INTERNET, SCHEDULE_EXACT_ALARM, RECEIVE_BOOT_COMPLETED, FOREGROUND_SERVICE, FOREGROUND_SERVICE_SPECIAL_USE
 
 # python-for-android: النسخة القديمة v2024.01.21 لا تدعم API 36، فنستعمل develop مؤقتًا
 # (سنثبّته على رقم commit محدد بعد التأكد من نجاح البناء)
