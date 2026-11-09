@@ -27,7 +27,7 @@ jobs:
         sudo apt-get install -y git zip unzip autoconf libtool pkg-config \
           zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake \
           libffi-dev libssl-dev build-essential ccache
-        pip install --upgrade buildozer "cython<3" setuptools
+        pip install --upgrade "git+https://github.com/kivy/buildozer.git" "cython<3" setuptools
 
     - name: Install fixed signing key
       env:
@@ -42,6 +42,13 @@ jobs:
 
     - name: Build APK
       run: yes | buildozer -v android debug
+
+    - name: Show versions used (to pin them later)
+      run: |
+        buildozer --version || true
+        pip show buildozer | grep -i '^version' || true
+        echo "python-for-android commit:"
+        git -C .buildozer/android/platform/python-for-android rev-parse HEAD || true
 
     - name: Re-sign APK with the fixed key
       run: |
