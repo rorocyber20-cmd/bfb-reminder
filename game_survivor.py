@@ -9,6 +9,15 @@ from kivy.factory import Factory
 
 import brain_data as bd
 
+try:
+    from fx import play as fx_play, buzz as fx_buzz
+except Exception:                      # الصوت اختياري: لا يجب أن يكسر اللعبة
+    def fx_play(*a, **k):
+        pass
+
+    def fx_buzz(*a, **k):
+        pass
+
 SECONDS = 15              # ثقافة عامة
 SECONDS_RIDDLE = 30       # ألغاز
 HINT_COST = 5             # التلميح ينقص 5 ثوانٍ من العداد
@@ -252,6 +261,11 @@ class SurvivorMixin:
 
     def ls_finish(self, res):
         self.ls_stop()
+        if res == 'ok':
+            fx_play('ok')
+        else:
+            fx_play('bad')
+            fx_buzz(200)
         self.ls_res = res
         self.go('ls_fb')
 
