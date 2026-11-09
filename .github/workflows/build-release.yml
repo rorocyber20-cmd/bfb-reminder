@@ -1,0 +1,75 @@
+name: Build Release AAB (Google Play)
+
+# يشتغل يدويا فقط: Actions > Build Release AAB > Run workflow
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '17'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git zip unzip autoconf libtool pkg-config \
+          zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake \
+          libffi-dev libssl-dev build-essential ccache
+        pip install --upgrade "git+https://github.com/kivy/buildozer.git" "cython<3" setuptools
+
+    - name: Prepare upload key
+      env:
+        UPLOAD_KEYSTORE_B64: ${{ secrets.UPLOAD_KEYSTORE_B64 }}
+        UPLOAD_STORE_PASSWORD: ${{ secrets.UPLOAD_STORE_PASSWORD }}
+        UPLOAD_KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+      run: |
+        for v in UPLOAD_KEYSTORE_B64 UPLOAD_STORE_PASSWORD UPLOAD_KEY_PASSWORD; do
+          if [ -z "${!v}" ]; then
+            echo "::error::Secret $v is missing (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+        done
+        echo "$UPLOAD_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+        echo "P4A_RELEASE_KEYSTORE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+        echo "P4A_RELEASE_KEYALIAS=upload" >> "$GITHUB_ENV"
+        echo "P4A_RELEASE_KEYSTORE_PASSWD=$UPLOAD_STORE_PASSWORD" >> "$GITHUB_ENV"
+        echo "P4A_RELEASE_KEYALIAS_PASSWD=$UPLOAD_KEY_PASSWORD" >> "$GITHUB_ENV"
+
+    - name: Set AAB and version code
+      run: |
+        grep -q '^android.release_artifact' buildozer.spec || sed -i '/^\[app\]/a android.release_artifact = aab' buildozer.spec
+        grep -q '^android.numeric_version' buildozer.spec || sed -i '/^\[app\]/a android.numeric_version = ${{ github.run_number }}' buildozer.spec
+        grep -n 'release_artifact\|numeric_version\|^version' buildozer.spec
+
+    - name: Build release AAB
+      run: yes | buildozer -v android release
+
+    - name: Show versions used
+      run: |
+        buildozer --version || true
+        echo "python-for-android commit:"
+        git -C .buildozer/android/platform/python-for-android rev-parse HEAD || true
+
+    - name: Check signature (expected to start with 47:7C:19:20)
+      run: |
+        ls -la bin/
+        for f in bin/*.aab; do
+          keytool -printcert -jarfile "$f" | grep -i "SHA256"
+        done
+
+    - name: Upload AAB
+      uses: actions/upload-artifact@v4
+      with:
+        name: BFB-Reminder-AAB
+        path: bin/*.aab
