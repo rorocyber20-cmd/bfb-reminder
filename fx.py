@@ -73,6 +73,42 @@ def _log(msg):
 
 
 _pool = {'obj': None, 'ids': {}, 'tried': False}
+_dir = {'path': None}
+
+
+def _sounds_dir():
+    """مجلد ملفات wav: نكتبها من fx_sounds.py (مضمّنة كنص) في مجلد بيانات التطبيق عند أول استعمال."""
+    if _dir['path']:
+        return _dir['path']
+    candidates = []
+    try:
+        from kivy.app import App
+        app = App.get_running_app()
+        if app is not None and app.user_data_dir:
+            candidates.append(os.path.join(app.user_data_dir, 'sounds'))
+    except Exception:
+        pass
+    candidates.append(os.path.join(_BASE, 'sounds'))
+    try:
+        import base64
+        from fx_sounds import SOUNDS
+        for d in candidates:
+            try:
+                os.makedirs(d, exist_ok=True)
+                for name, b64 in SOUNDS.items():
+                    data = base64.b64decode(''.join(b64))
+                    path = os.path.join(d, name + '.wav')
+                    if not os.path.exists(path) or os.path.getsize(path) != len(data):
+                        with open(path, 'wb') as f:
+                            f.write(data)
+                _dir['path'] = d
+                return d
+            except Exception as e:
+                _log('write sounds failed in %s: %r' % (d, e))
+    except Exception as e:
+        _log('fx_sounds import failed: ' + repr(e))
+    _dir['path'] = candidates[-1]          # آخر أمل: مجلد sounds بجانب الكود إن وُجد
+    return _dir['path']
 
 
 def _soundpool():
@@ -89,10 +125,10 @@ def _soundpool():
         AttrBuilder = autoclass('android.media.AudioAttributes$Builder')
         attrs = AttrBuilder().setUsage(14).setContentType(4).build()   # USAGE_GAME, SONIFICATION
         pool = Builder().setMaxStreams(6).setAudioAttributes(attrs).build()
-        d = os.path.join(_BASE, 'sounds')
+        d = _sounds_dir()
         names = [f[:-4] for f in os.listdir(d) if f.endswith('.wav')] if os.path.isdir(d) else []
         if not names:
-            _log('sounds folder is missing or empty: ' + d)
+            _log('no sound files in: ' + d)
         for n in names:
             _pool['ids'][n] = pool.load(os.path.join(d, n + '.wav'), 1)
         _pool['obj'] = pool
@@ -116,7 +152,7 @@ def play(name, volume=0.8):
         snd = _sounds.get(name)
         if snd is None:
             from kivy.core.audio import SoundLoader
-            snd = SoundLoader.load(os.path.join(_BASE, 'sounds', name + '.wav'))
+            snd = SoundLoader.load(os.path.join(_sounds_dir(), name + '.wav'))
             if not snd:
                 _log('SoundLoader could not load ' + name)
             _sounds[name] = snd or False
@@ -176,7 +212,7 @@ def diagnose():
     """نص قصير يوضح حالة الصوت (للعرض في الإعدادات عند الاختبار)."""
     parts = []
     try:
-        d = os.path.join(_BASE, 'sounds')
+        d = _sounds_dir()
         files = sorted(f for f in os.listdir(d) if f.endswith('.wav')) if os.path.isdir(d) else []
         parts.append('folder ' + ('OK' if os.path.isdir(d) else 'MISSING'))
         parts.append('files %d/6' % len(files))
@@ -189,3 +225,4 @@ def diagnose():
     except Exception as e:
         parts.append('diag failed: ' + repr(e)[:80])
     return ' | '.join(parts)
+
