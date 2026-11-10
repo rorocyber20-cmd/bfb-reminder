@@ -291,6 +291,19 @@ HELP_TEXT = {
                 'Reset to defaults restores the look settings only. Your '
                 'birthdays stay as they are.',
             ]),
+            ('notif', 'Make sure reminders arrive', [
+                'Allow notifications: Phone Settings, then Apps, then BFB, then '
+                'Notifications. Use Test Notification in Settings to check.',
+                'Autostart: turn it ON for BFB (Xiaomi / Redmi / Poco: Settings, '
+                'Apps, Manage apps, BFB, Autostart). Without it, reminders stop '
+                'after the phone restarts.',
+                'Battery: set BFB to No restrictions. On Xiaomi phones also open '
+                'Recent apps and lock BFB (pull its card down and tap the lock).',
+                'Keep the small permanent notification. It keeps reminders alive. '
+                'Do not use Force stop; if you do, open BFB once again.',
+                'The reminder arrives at the hour you chose, or up to about 10 '
+                'minutes later. Open the app once after installing or updating.',
+            ]),
             ('tips', 'Tips', [
                 'Reminders arrive 7 days and 1 day before each birthday. In Settings '
                 'you can turn each one on or off and choose the time.',
@@ -357,6 +370,19 @@ HELP_TEXT = {
                 'اختبار الإشعارات يتأكد أن الإشعارات تعمل في هاتفك.',
                 'إعادة الضبط تعيد إعدادات المظهر فقط، وأعياد الميلاد '
                 'تبقى كما هي.',
+            ]),
+            ('notif', 'ضمان وصول التذكيرات', [
+                'اسمح بالإشعارات: إعدادات الهاتف ثم التطبيقات ثم BFB ثم '
+                'الإشعارات. وجرّب زر Test Notification في الإعدادات.',
+                'التشغيل التلقائي (Autostart): فعّله للتطبيق (في Xiaomi وRedmi '
+                'وPoco: الإعدادات، التطبيقات، إدارة التطبيقات، BFB، التشغيل '
+                'التلقائي). بدونه تتوقف التذكيرات بعد إعادة تشغيل الهاتف.',
+                'البطارية: اجعل التطبيق على "بدون قيود". وفي هواتف Xiaomi افتح '
+                'التطبيقات الأخيرة وثبّت BFB (اسحب بطاقته للأسفل واضغط القفل).',
+                'أبقِ الإشعار الدائم الصغير، فهو الذي يُبقي التذكير شغّالا. '
+                'لا تستعمل "إيقاف إجباري"، وإذا فعلت فافتح BFB مرة أخرى.',
+                'يصل التذكير في الساعة التي اخترتها أو بعدها بنحو 10 دقائق '
+                'كحد أقصى. افتح التطبيق مرة واحدة بعد التثبيت أو التحديث.',
             ]),
             ('tips', 'نصائح', [
                 'تصلك التذكيرات قبل أسبوع وقبل يوم من كل عيد ميلاد. ومن الإعدادات '
@@ -780,6 +806,7 @@ class BFBApp(App):
             import fx
             self.sound_on = fx.is_on('sound')
             self.vibrate_on = fx.is_on('vibrate')
+            fx.init()
         except Exception:
             pass
 
@@ -795,6 +822,33 @@ class BFBApp(App):
         except Exception as e:
             if core:
                 core.log(f"toggle fx: {e}")
+
+    def test_sound(self):
+        try:
+            import fx
+            fx.play('win', 1.0)
+            fx.buzz(120)
+            self.show_status('Sound test: ' + fx.diagnose(), ok=True)
+        except Exception as e:
+            self.show_status('Sound test failed: ' + str(e))
+
+    def open_app_settings(self):
+        """يفتح صفحة إعدادات التطبيق في الهاتف (منها: الإشعارات، البطارية، التشغيل التلقائي)."""
+        try:
+            if platform == 'android':
+                from jnius import autoclass
+                Intent = autoclass('android.content.Intent')
+                Settings = autoclass('android.provider.Settings')
+                Uri = autoclass('android.net.Uri')
+                activity = autoclass('org.kivy.android.PythonActivity').mActivity
+                intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.setData(Uri.parse('package:' + activity.getPackageName()))
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                activity.startActivity(intent)
+        except Exception as e:
+            if core:
+                core.log(f"open app settings: {e}")
+            self.show_status("Open Phone Settings, then Apps, then BFB.")
 
     def toggle_notify(self, which):
         key = 'notify_week' if which == 'week' else 'notify_day'
