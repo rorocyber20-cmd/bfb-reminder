@@ -22,10 +22,28 @@ LOG_FILE = os.path.join(data_dir(), 'log.txt')
 
 def log(msg):
     try:
+        # نمنع تضخم الملف: إذا كبر نحتفظ بآخر جزء منه فقط
+        try:
+            if os.path.getsize(LOG_FILE) > 120000:
+                with open(LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
+                    tail = f.read()[-40000:]
+                with open(LOG_FILE, 'w', encoding='utf-8') as f:
+                    f.write(tail)
+        except OSError:
+            pass
         with open(LOG_FILE, 'a', encoding='utf-8') as f:
             f.write(f"{datetime.now():%Y-%m-%d %H:%M:%S} {msg}\n")
     except Exception:
         pass
+
+
+def read_log(n=6):
+    """آخر n أسطر من سجل التطبيق (للتشخيص)."""
+    try:
+        with open(LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
+            return f.read().strip().split('\n')[-n:]
+    except Exception:
+        return []
 
 
 def _read(path, default):
