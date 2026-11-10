@@ -60,7 +60,11 @@ def set_on(which, value):
     _save()
 
 
+_last_error = ['']
+
+
 def _log(msg):
+    _last_error[0] = msg
     try:
         import core
         core.log('fx: ' + msg)
@@ -158,3 +162,30 @@ def buzz(ms=40):
             v.vibrate(int(ms))
     except Exception:
         pass
+
+
+def init():
+    """تحميل الأصوات مبكرًا (SoundPool يحمّل في الخلفية، فنبدأه عند فتح التطبيق)."""
+    try:
+        _soundpool()
+    except Exception as e:
+        _log('init failed: ' + repr(e))
+
+
+def diagnose():
+    """نص قصير يوضح حالة الصوت (للعرض في الإعدادات عند الاختبار)."""
+    parts = []
+    try:
+        d = os.path.join(_BASE, 'sounds')
+        files = sorted(f for f in os.listdir(d) if f.endswith('.wav')) if os.path.isdir(d) else []
+        parts.append('folder ' + ('OK' if os.path.isdir(d) else 'MISSING'))
+        parts.append('files %d/6' % len(files))
+        pool = _soundpool()
+        parts.append('engine ' + ('SoundPool' if pool is not None else 'SoundLoader'))
+        if pool is not None:
+            parts.append('loaded %d' % sum(1 for v in _pool['ids'].values() if v))
+        if _last_error[0]:
+            parts.append('error: ' + _last_error[0][:80])
+    except Exception as e:
+        parts.append('diag failed: ' + repr(e)[:80])
+    return ' | '.join(parts)
