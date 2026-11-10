@@ -35,6 +35,10 @@ android.permissions = POST_NOTIFICATIONS, VIBRATE, WAKE_LOCK, SCHEDULE_EXACT_ALA
 p4a.branch = develop
 p4a.commit = 1c9a4b4f817847bd8505d972d1a0e6f965929a88
 
+# تشغيل خدمة التذكير بعد إقلاع الهاتف: ملف Java صغير + تسجيل المستقبِل في المانيفست
+android.add_src = java
+p4a.extra_args = --extra-manifest-application-xml='<receiver android:name="org.bfb.bfbreminder.BootReceiver" android:enabled="true" android:exported="true"><intent-filter><action android:name="android.intent.action.BOOT_COMPLETED"/><action android:name="android.intent.action.QUICKBOOT_POWERON"/><action android:name="android.intent.action.MY_PACKAGE_REPLACED"/></intent-filter></receiver>'
+
 [buildozer]
 
 log_level = 2
