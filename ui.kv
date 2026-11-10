@@ -650,7 +650,17 @@
                 text: 'Vibration: ' + ('ON' if app.vibrate_on else 'OFF')
                 custom_bg: [] if app.vibrate_on else [0.5, 0.5, 0.55, 1]
                 on_press: app.toggle_fx('vibrate')
+            StyledButton:
+                text: 'Test sound'
+                custom_bg: [0.35, 0.35, 0.45, 1]
+                on_press: app.test_sound()
 
+            SectionLabel:
+                text: 'Reminders not arriving?'
+            StyledButton:
+                text: 'Open phone settings for this app'
+                custom_bg: [0.35, 0.35, 0.45, 1]
+                on_press: app.open_app_settings()
             SectionLabel:
                 text: 'Community'
             StyledButton:
