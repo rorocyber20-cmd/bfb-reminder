@@ -1,0 +1,726 @@
+#:import dp kivy.metrics.dp
+#:import sp kivy.metrics.sp
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+
+# ---------------------------------------------------------------
+# عناصر قابلة لإعادة الاستعمال (تتبع ألوان وإعدادات التطبيق)
+# ---------------------------------------------------------------
+
+<StyledButton>:
+    background_normal: ''
+    background_down: ''
+    background_color: 0, 0, 0, 0
+    color: 1, 1, 1, 1
+    font_name: app.font
+    font_size: sp(15) * app.font_scale
+    size_hint_y: None
+    height: dp(app.btn_height)
+    opacity: 0.75 if self.state == 'down' else 1
+    canvas.before:
+        Color:
+            rgba: self.custom_bg if self.custom_bg else app.primary_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(app.radius), ]
+
+<NavButton>:
+    group: 'nav'
+    allow_no_selection: False
+    background_normal: ''
+    background_down: ''
+    background_color: 0, 0, 0, 0
+    font_name: app.font
+    font_size: sp(14) * app.font_scale
+    bold: self.state == 'down'
+    color: app.primary_color if self.state == 'down' else app.muted_color
+
+<CustomTextInput>:
+    multiline: False
+    font_name: app.font
+    font_size: sp(16) * app.font_scale
+    padding: [dp(15), dp(14), dp(15), dp(14)]
+    background_normal: ''
+    background_active: ''
+    background_color: 0, 0, 0, 0
+    foreground_color: app.text_color
+    hint_text_color: app.muted_color
+    cursor_color: app.primary_color
+
+<InputBox@BoxLayout>:
+    size_hint_y: None
+    height: dp(50)
+    canvas.before:
+        Color:
+            rgba: app.card_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(app.radius), ]
+
+<SectionLabel@Label>:
+    font_name: app.font
+    font_size: sp(14) * app.font_scale
+    color: app.muted_color
+    size_hint_y: None
+    height: dp(28)
+    text_size: self.width, None
+    halign: 'left'
+    valign: 'middle'
+
+<StatusLabel@Label>:
+    font_name: app.font
+    font_size: sp(12) * app.font_scale
+    color: app.status_color
+    text: app.status
+    size_hint_y: None
+    height: dp(36) if self.text else 0
+    text_size: self.width, None
+    halign: 'center'
+    valign: 'middle'
+
+<AppSpinnerOption@SpinnerOption>:
+    background_normal: ''
+    background_down: ''
+    background_color: app.card_color
+    color: app.text_color
+    font_name: app.font
+    font_size: sp(16)
+    size_hint_y: None
+    height: dp(44)
+    canvas.after:
+        Color:
+            rgba: app.muted_color[0], app.muted_color[1], app.muted_color[2], 0.3
+        Line:
+            points: [self.x, self.y, self.right, self.y]
+            width: 1
+
+<AppSpinner@Spinner>:
+    background_normal: ''
+    background_down: ''
+    background_color: 0, 0, 0, 0
+    color: app.text_color
+    font_name: app.font
+    font_size: sp(16) * app.font_scale
+    option_cls: 'AppSpinnerOption'
+    canvas.before:
+        Color:
+            rgba: app.card_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(app.radius), ]
+
+# اللوڨو: يُقَصّ عند حافة خانة الاسم، مع لمسة زخرفة (توهّج + نجمتان + نقطتان)
+<LogoBox>:
+    canvas.before:
+        Color:
+            rgba: app.primary_color[0], app.primary_color[1], app.primary_color[2], 0.10
+        Ellipse:
+            pos: self.center_x - self.width * 0.40, self.y - self.height * 0.35
+            size: self.width * 0.80, self.height * 1.2
+        Color:
+            rgba: app.primary_color[0], app.primary_color[1], app.primary_color[2], 0.85
+        Line:
+            points: [self.x + self.width * 0.14 - dp(7), self.top - dp(14), self.x + self.width * 0.14 + dp(7), self.top - dp(14)]
+            width: 1.2
+        Line:
+            points: [self.x + self.width * 0.14, self.top - dp(14) - dp(7), self.x + self.width * 0.14, self.top - dp(14) + dp(7)]
+            width: 1.2
+        Line:
+            points: [self.x + self.width * 0.88 - dp(5), self.top - dp(10), self.x + self.width * 0.88 + dp(5), self.top - dp(10)]
+            width: 1.2
+        Line:
+            points: [self.x + self.width * 0.88, self.top - dp(10) - dp(5), self.x + self.width * 0.88, self.top - dp(10) + dp(5)]
+            width: 1.2
+        Ellipse:
+            pos: self.x + self.width * 0.62, self.top - dp(12)
+            size: dp(4), dp(4)
+        Ellipse:
+            pos: self.x + self.width * 0.30, self.top - dp(18)
+            size: dp(3), dp(3)
+
+# زر المساعدة: دائرة فيها حرف i
+<InfoButton@Button>:
+    text: 'i'
+    bold: True
+    font_name: app.font
+    font_size: sp(18)
+    color: app.primary_color
+    background_normal: ''
+    background_down: ''
+    background_color: 0, 0, 0, 0
+    opacity: 0.6 if self.state == 'down' else 1
+    canvas.before:
+        Color:
+            rgba: app.primary_color
+        Line:
+            circle: self.center_x, self.center_y, min(self.width, self.height) / 2 - dp(1)
+            width: dp(1.3)
+
+<BirthdayRow>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(90)
+    padding: [dp(16), dp(10), dp(10), dp(10)]
+    spacing: dp(10)
+    canvas.before:
+        Color:
+            rgba: app.card_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(app.radius), ]
+        Color:
+            rgba: root.days_color
+        RoundedRectangle:
+            pos: self.x + dp(5), self.y + dp(14)
+            size: dp(4), self.height - dp(28)
+            radius: [dp(2), ]
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: root.name_text
+            font_name: app.font
+            font_size: sp(16) * app.font_scale
+            color: app.text_color
+            size_hint_y: 0.4
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+        Label:
+            text: root.sub_text
+            font_name: app.font
+            font_size: sp(12) * app.font_scale
+            color: app.muted_color
+            size_hint_y: 0.3
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+        Label:
+            text: root.days_text
+            font_name: app.font
+            font_size: sp(13) * app.font_scale
+            color: root.days_color
+            size_hint_y: 0.3
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_x: None
+        width: dp(86)
+        spacing: dp(6)
+        StyledButton:
+            text: 'Edit'
+            height: dp(32)
+            custom_bg: [0.35, 0.35, 0.45, 1]
+            on_release: app.edit_birthday(root.bname, root.bdate)
+        StyledButton:
+            text: 'Delete'
+            height: dp(32)
+            custom_bg: [0.85, 0.2, 0.2, 1]
+            on_release: app.ask_delete(root.bname, root.bdate)
+
+<DatePopup>:
+    title: 'Edit birthday' if root.show_name else 'Birth date'
+    title_font: app.font
+    title_color: app.text_color
+    separator_color: app.primary_color
+    background: ''
+    background_color: app.bg_color
+    size_hint: 0.92, None
+    height: dp(250) + (dp(62) if root.show_name else 0)
+    auto_dismiss: True
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: [0, dp(6), 0, 0]
+        InputBox:
+            height: dp(50) if root.show_name else 0
+            opacity: 1 if root.show_name else 0
+            disabled: not root.show_name
+            CustomTextInput:
+                id: name_in
+                hint_text: 'Name'
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(8)
+            AppSpinner:
+                id: day_sp
+                size_hint_x: 0.24
+            AppSpinner:
+                id: month_sp
+                size_hint_x: 0.36
+            AppSpinner:
+                id: year_sp
+                size_hint_x: 0.40
+        Label:
+            id: err
+            text: ''
+            font_name: app.font
+            font_size: sp(12) * app.font_scale
+            color: 0.9, 0.25, 0.25, 1
+            size_hint_y: None
+            height: dp(22)
+        BoxLayout:
+            size_hint_y: None
+            height: dp(app.btn_height)
+            spacing: dp(10)
+            StyledButton:
+                text: 'Cancel'
+                custom_bg: [0.45, 0.45, 0.52, 1]
+                on_release: root.dismiss()
+            StyledButton:
+                text: 'Save'
+                on_release: root.confirm()
+
+<ConfirmPopup>:
+    title: 'Confirm'
+    title_font: app.font
+    title_color: app.text_color
+    separator_color: app.primary_color
+    background: ''
+    background_color: app.bg_color
+    size_hint: 0.88, None
+    height: dp(150) + dp(app.btn_height)
+    auto_dismiss: True
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: [0, dp(6), 0, 0]
+        Label:
+            text: root.msg
+            font_name: app.font
+            font_size: sp(15) * app.font_scale
+            color: app.text_color
+            size_hint_y: None
+            height: dp(28)
+        Label:
+            text: root.sub
+            font_name: app.font
+            font_size: sp(16) * app.font_scale
+            color: app.muted_color
+            size_hint_y: None
+            height: dp(32)
+        BoxLayout:
+            size_hint_y: None
+            height: dp(app.btn_height)
+            spacing: dp(10)
+            StyledButton:
+                text: 'Cancel'
+                custom_bg: [0.45, 0.45, 0.52, 1]
+                on_release: root.dismiss()
+            StyledButton:
+                text: 'Delete'
+                custom_bg: [0.85, 0.2, 0.2, 1]
+                on_release: root.yes()
+
+<HelpPopup>:
+    title_font: app.font
+    title_color: app.text_color
+    separator_color: app.primary_color
+    background: ''
+    background_color: app.bg_color
+    size_hint: 0.94, 0.82
+    auto_dismiss: True
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(8)
+        padding: [0, dp(6), 0, 0]
+        BoxLayout:
+            size_hint_y: None
+            height: dp(38)
+            Widget:
+            StyledButton:
+                text: root.lang_btn_text
+                size_hint_x: None
+                width: dp(76)
+                height: dp(36)
+                pos_hint: {'center_y': 0.5}
+                on_release: root.toggle_lang()
+        ScrollView:
+            do_scroll_x: False
+            BoxLayout:
+                id: content
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(8)
+                padding: [0, dp(4)]
+        StyledButton:
+            text: root.close_text
+            on_release: root.dismiss()
+
+# ---------------------------------------------------------------
+# الشاشات
+# ---------------------------------------------------------------
+
+<BirthdaysScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [dp(16), dp(24), dp(16), dp(16)]
+        spacing: dp(12)
+        # فراغ علوي ينزّل المحتوى إلى ما فوق وسط الشاشة، وفيه زر المساعدة
+        FloatLayout:
+            size_hint_y: None
+            height: root.height * 0.15
+            InfoButton:
+                size_hint: None, None
+                size: dp(38), dp(38)
+                pos_hint: {'right': 1, 'top': 1}
+                on_release: app.show_help()
+        # اللوڨو + خانة الاسم ملتصقان (الحافة العليا للخانة تقصّ اللوڨو)
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            spacing: 0
+            height: logo_box.height + dp(50)
+            LogoBox:
+                id: logo_box
+                size_hint_y: None
+                height: (self.width * 1.1 / 2.368) * 0.65 + dp(6)
+                Image:
+                    source: 'bfb_logo_new.png'
+                    color: app.primary_color
+                    size_hint: None, None
+                    width: self.parent.width * 1.1
+                    height: self.width / 2.368
+                    allow_stretch: True
+                    keep_ratio: True
+                    x: self.parent.center_x - self.width / 2
+                    y: self.parent.y - self.height * 0.35 - (1 - root.rise) * self.height * 0.5
+            InputBox:
+                CustomTextInput:
+                    id: name_input
+                    hint_text: 'Enter Name'
+        InputBox:
+            Button:
+                id: date_btn
+                text: root.birth_str if root.birth_str else 'Select birth date'
+                font_name: app.font
+                font_size: sp(16) * app.font_scale
+                background_normal: ''
+                background_down: ''
+                background_color: 0, 0, 0, 0
+                color: app.text_color if root.birth_str else app.muted_color
+                text_size: self.size
+                halign: 'left'
+                valign: 'middle'
+                padding_x: dp(15)
+                on_release: root.open_date_picker()
+        StyledButton:
+            text: 'Add Birthday'
+            bold: True
+            on_press: root.add_birthday()
+        StatusLabel:
+        ScrollView:
+            BoxLayout:
+                id: list_layout
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
+                padding: [0, dp(4)]
+
+<GiftCard>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: self.minimum_height
+    padding: dp(12)
+    spacing: dp(2)
+    canvas.before:
+        Color:
+            rgba: app.card_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(app.radius), ]
+
+<GiftScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(16)
+        spacing: dp(10)
+        BoxLayout:
+            size_hint_y: None
+            height: dp(46)
+            spacing: dp(10)
+            Label:
+                text: root.title_text
+                font_name: app.font
+                font_size: sp(22) * app.font_scale
+                bold: True
+                color: app.primary_color
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.size
+            StyledButton:
+                text: root.lang_label
+                size_hint_x: None
+                width: dp(92)
+                height: dp(40)
+                pos_hint: {'center_y': 0.5}
+                on_press: root.toggle_lang()
+        ScrollView:
+            id: scroll
+            do_scroll_x: False
+            BoxLayout:
+                id: content
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
+                padding: [0, dp(4)]
+
+<GamesScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(16)
+        spacing: dp(10)
+        BoxLayout:
+            size_hint_y: None
+            height: dp(46)
+            spacing: dp(10)
+            Label:
+                text: root.title_text
+                font_name: app.font
+                font_size: sp(22) * app.font_scale
+                bold: True
+                color: app.primary_color
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.size
+            StyledButton:
+                text: root.lang_label
+                size_hint_x: None
+                width: dp(92)
+                height: dp(40)
+                pos_hint: {'center_y': 0.5}
+                on_press: root.toggle_lang()
+        ScrollView:
+            id: scroll
+            do_scroll_x: False
+            BoxLayout:
+                id: content
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
+                padding: [0, dp(4)]
+
+<SettingsScreen>:
+    ScrollView:
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(16)
+            spacing: dp(12)
+
+            Label:
+                text: 'Settings'
+                font_name: app.font
+                font_size: sp(24) * app.font_scale
+                bold: True
+                color: app.primary_color
+                size_hint_y: None
+                height: dp(46)
+
+            SectionLabel:
+                text: 'Theme'
+            BoxLayout:
+                size_hint_y: None
+                height: dp(app.btn_height)
+                spacing: dp(10)
+                StyledButton:
+                    text: 'Light'
+                    on_press: app.set_theme('light')
+                StyledButton:
+                    text: 'Dark'
+                    on_press: app.set_theme('dark')
+
+            SectionLabel:
+                text: 'Accent color'
+            BoxLayout:
+                size_hint_y: None
+                height: dp(app.btn_height)
+                spacing: dp(8)
+                StyledButton:
+                    custom_bg: [0.10, 0.50, 0.80, 1]
+                    on_press: app.set_accent('blue')
+                StyledButton:
+                    custom_bg: [0.18, 0.62, 0.35, 1]
+                    on_press: app.set_accent('green')
+                StyledButton:
+                    custom_bg: [0.55, 0.35, 0.80, 1]
+                    on_press: app.set_accent('purple')
+                StyledButton:
+                    custom_bg: [0.85, 0.25, 0.30, 1]
+                    on_press: app.set_accent('red')
+                StyledButton:
+                    custom_bg: [0.10, 0.60, 0.60, 1]
+                    on_press: app.set_accent('teal')
+                StyledButton:
+                    custom_bg: [0.91, 0.36, 0.62, 1]
+                    on_press: app.set_accent('pink')
+
+            SectionLabel:
+                text: 'Corner roundness: ' + str(int(app.radius))
+            Slider:
+                min: 0
+                max: 30
+                step: 1
+                value: app.radius
+                size_hint_y: None
+                height: dp(40)
+                value_track: True
+                value_track_color: app.primary_color
+                on_value: app.set_radius(self.value)
+
+            SectionLabel:
+                text: 'Button height: ' + str(int(app.btn_height))
+            Slider:
+                min: 36
+                max: 70
+                step: 1
+                value: app.btn_height
+                size_hint_y: None
+                height: dp(40)
+                value_track: True
+                value_track_color: app.primary_color
+                on_value: app.set_btn_height(self.value)
+
+            SectionLabel:
+                text: 'Text size: ' + str(int(app.font_scale * 100)) + '%'
+            Slider:
+                min: 0.8
+                max: 1.4
+                step: 0.05
+                value: app.font_scale
+                size_hint_y: None
+                height: dp(40)
+                value_track: True
+                value_track_color: app.primary_color
+                on_value: app.set_font_scale(self.value)
+
+            SectionLabel:
+                text: 'Notifications'
+            StyledButton:
+                text: '1 week before: ' + ('ON' if app.notify_week else 'OFF')
+                custom_bg: [] if app.notify_week else [0.5, 0.5, 0.55, 1]
+                on_press: app.toggle_notify('week')
+            StyledButton:
+                text: '1 day before: ' + ('ON' if app.notify_day else 'OFF')
+                custom_bg: [] if app.notify_day else [0.5, 0.5, 0.55, 1]
+                on_press: app.toggle_notify('day')
+            SectionLabel:
+                text: 'Notification time: ' + ('%02d:00' % int(app.notify_hour))
+            BoxLayout:
+                size_hint_y: None
+                height: dp(app.btn_height)
+                spacing: dp(10)
+                StyledButton:
+                    text: '-'
+                    on_press: app.change_hour(-1)
+                StyledButton:
+                    text: '+'
+                    on_press: app.change_hour(1)
+
+            SectionLabel:
+                text: 'Backup'
+            StyledButton:
+                text: 'Export backup (copy + share)'
+                on_press: app.export_backup()
+            StyledButton:
+                text: 'Import backup (from clipboard)'
+                custom_bg: [0.35, 0.35, 0.45, 1]
+                on_press: app.import_backup()
+            SectionLabel:
+                text: 'Games: sound and vibration'
+            StyledButton:
+                text: 'Sound: ' + ('ON' if app.sound_on else 'OFF')
+                custom_bg: [] if app.sound_on else [0.5, 0.5, 0.55, 1]
+                on_press: app.toggle_fx('sound')
+            StyledButton:
+                text: 'Vibration: ' + ('ON' if app.vibrate_on else 'OFF')
+                custom_bg: [] if app.vibrate_on else [0.5, 0.5, 0.55, 1]
+                on_press: app.toggle_fx('vibrate')
+            StyledButton:
+                text: 'Test sound'
+                custom_bg: [0.35, 0.35, 0.45, 1]
+                on_press: app.test_sound()
+
+            SectionLabel:
+                text: 'Reminders not arriving?'
+            StyledButton:
+                text: 'Open phone settings for this app'
+                custom_bg: [0.35, 0.35, 0.45, 1]
+                on_press: app.open_app_settings()
+            StyledButton:
+                text: 'Show service log'
+                custom_bg: [0.35, 0.35, 0.45, 1]
+                on_press: app.show_service_log()
+            SectionLabel:
+                text: 'Community'
+            StyledButton:
+                text: 'Join our Telegram channel'
+                on_press: app.open_telegram()
+            StyledButton:
+                text: 'Test Notification'
+                custom_bg: [0.35, 0.35, 0.45, 1]
+                on_press: app.test_notification()
+            StyledButton:
+                text: 'Reset to defaults'
+                custom_bg: [0.5, 0.5, 0.55, 1]
+                on_press: app.reset_settings()
+            StatusLabel:
+
+# ---------------------------------------------------------------
+# الواجهة الرئيسية: شاشات + شريط التبويبات السفلي
+# ---------------------------------------------------------------
+
+BoxLayout:
+    orientation: 'vertical'
+    canvas.before:
+        Color:
+            rgba: app.bg_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    ScreenManager:
+        id: sm
+        transition: NoTransition()
+        BirthdaysScreen:
+            name: 'birthdays'
+        GiftScreen:
+            name: 'gift'
+        GamesScreen:
+            name: 'games'
+        SettingsScreen:
+            name: 'settings'
+
+    BoxLayout:
+        size_hint_y: None
+        height: dp(56)
+        canvas.before:
+            Color:
+                rgba: app.card_color
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        NavButton:
+            text: 'Birthdays'
+            state: 'down'
+            on_release: app.go('birthdays')
+        NavButton:
+            text: 'Gift'
+            on_release: app.go('gift')
+        NavButton:
+            text: 'Games'
+            on_release: app.go('games')
+        NavButton:
+            text: 'Settings'
+            on_release: app.go('settings')
