@@ -55,6 +55,13 @@ jobs:
     - name: Build release AAB
       run: yes | buildozer -v android release
 
+    - name: Check boot receiver in manifest
+      run: |
+        find .buildozer -name AndroidManifest.xml -path "*src/main*" | head -3 | while read f; do
+          echo "== $f =="
+          grep -n "BootReceiver\|BOOT_COMPLETED" "$f" || echo "!! BootReceiver NOT FOUND"
+        done
+
     - name: Show versions used
       run: |
         buildozer --version || true
