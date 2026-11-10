@@ -102,7 +102,6 @@ ACCENTS = {
     'blue': [0.10, 0.50, 0.80, 1],
     'green': [0.18, 0.62, 0.35, 1],
     'purple': [0.55, 0.35, 0.80, 1],
-    'orange': [0.93, 0.55, 0.15, 1],
     'red': [0.85, 0.25, 0.30, 1],
     'teal': [0.10, 0.60, 0.60, 1],
     'pink': [0.91, 0.36, 0.62, 1],
@@ -831,6 +830,20 @@ class BFBApp(App):
             self.show_status('Sound test: ' + fx.diagnose(), ok=True)
         except Exception as e:
             self.show_status('Sound test failed: ' + str(e))
+
+    def show_service_log(self):
+        """يعرض آخر أسطر سجل الخدمة: هل تعمل في الخلفية؟ ومتى آخر فحص؟"""
+        try:
+            lines = core.read_log(6)
+            if not lines:
+                self.show_status('Log is empty: the background service has not run yet.')
+                return
+            short = []
+            for ln in lines:
+                short.append(ln[11:16] + ' ' + ln[20:].replace('service ', ''))
+            self.show_status('Log: ' + ' | '.join(short), ok=True)
+        except Exception as e:
+            self.show_status('Log error: ' + str(e))
 
     def open_app_settings(self):
         """يفتح صفحة إعدادات التطبيق في الهاتف (منها: الإشعارات، البطارية، التشغيل التلقائي)."""
