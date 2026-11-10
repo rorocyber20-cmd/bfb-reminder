@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 
 import core
 
@@ -9,6 +10,7 @@ core.log("service started")
 while True:
     try:
         errors = core.check_and_notify()
+        core.log(f"service tick hour={datetime.now().hour} errors={len(errors) if errors else 0}")
         if errors:
             core.log(f"service errors: {errors}")
     except Exception as e:
