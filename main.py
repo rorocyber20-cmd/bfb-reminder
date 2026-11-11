@@ -834,16 +834,20 @@ class BFBApp(App):
     def show_service_log(self):
         """يعرض آخر أسطر سجل الخدمة: هل تعمل في الخلفية؟ ومتى آخر فحص؟"""
         try:
-            lines = [ln for ln in core.read_log(400) if 'service' in ln][-5:]
-            if not lines:
-                self.show_status('No service lines in the log: the background service has not '
-                                 'run (or it runs an old version). Close the app, wait 15 '
-                                 'minutes, and check again.')
-                return
-            short = []
-            for ln in lines:
-                short.append(ln[11:16] + ' ' + ln[20:].replace('service ', ''))
-            self.show_status('Log: ' + ' | '.join(short), ok=True)
+            lines = [ln for ln in core.read_log(400) if 'service' in ln][-4:]
+            short = [ln[11:16] + ' ' + ln[20:].replace('service ', '') for ln in lines]
+            trace = []
+            for base in (os.environ.get('ANDROID_PRIVATE'), os.path.dirname(core.LOG_FILE)):
+                if not base:
+                    continue
+                path = os.path.join(base, 'svc_trace.txt')
+                if os.path.exists(path):
+                    with open(path, 'r', encoding='utf-8', errors='ignore') as f:
+                        trace = f.read().strip().split('\n')[-4:]
+                    break
+            msg = 'Log: ' + ' | '.join(short) if short else 'Log: (no service lines)'
+            msg += '  ||  Trace: ' + (' | '.join(t[:90] for t in trace) if trace else '(none: service.py never ran)')
+            self.show_status(msg, ok=True)
         except Exception as e:
             self.show_status('Log error: ' + str(e))
 
@@ -1028,14 +1032,26 @@ class BFBApp(App):
             self.show_status(core.check_and_notify())
         except Exception as e:
             core.log(f"start check: {e}")
+        started = False
+        # الطريقة الأولى: نفس استدعاء Java الذي نجح عند الإقلاع (يبدأ الخدمة ويُظهر الإشعار الدائم)
         try:
-            from android import AndroidService
-            core.log("service: app asks to start the service")
-            svc = AndroidService('BFB Reminder', 'تذكير أعياد الميلاد يعمل')
-            svc.start('service started')
-            core.log("service: start call returned")
+            from jnius import autoclass
+            core.log("service: app asks to start the service (direct)")
+            activity = autoclass('org.kivy.android.PythonActivity').mActivity
+            autoclass('org.bfb.bfbreminder.ServiceReminder').start(activity, 'app')
+            core.log("service: direct start call returned")
+            started = True
         except Exception as e:
-            core.log(f"service error: {e}")
+            core.log(f"service error (direct): {e}")
+        if not started:
+            try:
+                from android import AndroidService
+                core.log("service: app asks to start the service (AndroidService)")
+                svc = AndroidService('BFB Reminder', 'تذكير أعياد الميلاد يعمل')
+                svc.start('service started')
+                core.log("service: AndroidService start call returned")
+            except Exception as e:
+                core.log(f"service error: {e}")
 
 
 if __name__ == '__main__':
