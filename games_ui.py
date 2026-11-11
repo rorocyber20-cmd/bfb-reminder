@@ -53,6 +53,7 @@ TugMixin, TUG_OK = _safe_import('game_tug', 'TugMixin', ['tug_init'])
 CharadesMixin, CG_OK = _safe_import('game_charades', 'CharadesMixin', ['cg_init'])
 XOMixin, XO_OK = _safe_import('game_xo', 'XOMixin', ['xo_init'])
 HangmanMixin, HM_OK = _safe_import('game_hangman', 'HangmanMixin', ['hm_init'])
+MathMixin, MA_OK = _safe_import('game_math', 'MathMixin', ['ma_init'])
 
 try:
     from game_tools import ToolsMixin
@@ -180,6 +181,9 @@ S = {
     'xo_title': ('X-O', 'إكس أو'),
     'xo_desc': ('Two players on one phone, or play against the phone on hard level.',
                 'لاعبان على هاتف واحد، أو العب ضد الهاتف بمستوى صعب.'),
+    'ma_title': ('Quick Math', 'الحساب السريع'),
+    'ma_desc': ('Two players, 30 seconds each: solve as many math problems as you can. Same problems for both!',
+                'لاعبان، 30 ثانية لكل منهما: حلّ أكبر عدد من المسائل الحسابية. المسائل نفسها للاثنين!'),
     'hm_title': ('Hangman', 'المشنقة'),
     'hm_desc': ('Guess the secret word letter by letter before the drawing is complete.',
                 'خمّن الكلمة السرية حرفًا حرفًا قبل أن يكتمل الرسم.'),
@@ -262,6 +266,8 @@ if XO_OK:
     GAMES += [('xo', 'xo_title', 'xo_desc', 'quick')]
 if HM_OK:
     GAMES += [('hangman', 'hm_title', 'hm_desc', 'brain')]
+if MA_OK:
+    GAMES += [('math', 'ma_title', 'ma_desc', 'brain')]
 if BRAIN_OK:
     GAMES += [('trivia', 'tv_title', 'tv_desc', 'brain'), ('riddles', 'rd_title', 'rd_desc', 'brain')]
 if TOOLS_OK:
@@ -288,7 +294,7 @@ def share_text(text):
 
 class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixin,
                   SurvivorMixin, BombMixin, OutbreakMixin, DuelMixin, FavMixin, TugMixin,
-                  CharadesMixin, XOMixin, HangmanMixin, ToolsMixin, Screen):
+                  CharadesMixin, XOMixin, HangmanMixin, MathMixin, ToolsMixin, Screen):
     title_text = StringProperty('')
     lang_label = StringProperty('')
 
@@ -328,6 +334,7 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
         self.cg_init()
         self.xo_init()
         self.hm_init()
+        self.ma_init()
         self.cat = None
         self.tools_init()
 
@@ -488,7 +495,7 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
     def capture(self):
         """يحفظ ما كتبه المستخدم قبل إعادة بناء الشاشة."""
         self.stop_anim()
-        for fn in ('ft_stop', 'ls_stop', 'bc_stop', 'ob_stop', 'dl_stop', 'tug_stop', 'cg_stop', 'xo_stop', 'hm_stop'):
+        for fn in ('ft_stop', 'ls_stop', 'bc_stop', 'ob_stop', 'dl_stop', 'tug_stop', 'cg_stop', 'xo_stop', 'hm_stop', 'ma_stop'):
             getattr(self, fn, lambda: None)()
         self.snapshot()
         self._name_ti = None
@@ -514,7 +521,7 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
             box.add_widget(self.label(traceback.format_exc(), fs=11, halign='left'))
         self.ids.scroll.scroll_y = 1
         # في لعبة المؤقت المخادع نمنع التمرير كي لا يتأخر وصول اللمسة للأزرار
-        self.ids.scroll.do_scroll_y = self.stage not in ('ft_play', 'dl_play', 'tug_play')
+        self.ids.scroll.do_scroll_y = self.stage not in ('ft_play', 'dl_play', 'tug_play', 'ma_play')
 
     def go(self, stage):
         self.capture()
@@ -627,6 +634,8 @@ class GamesScreen(PartyMixin, LieMixin, ImpostorMixin, BrainMixin, FakeTimerMixi
             self.go('xo_setup')
         elif gid == 'hangman':
             self.go('hm_setup')
+        elif gid == 'math':
+            self.go('ma_setup')
 
     # ---------- من يعرفني أكثر: الصفحة الأولى ----------
     def show_home(self, box):
