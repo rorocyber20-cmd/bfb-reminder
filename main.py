@@ -7,6 +7,7 @@ from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
 from kivy.core.text import LabelBase
 from kivy.core.window import Window
+from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.metrics import dp, sp
 from kivy.properties import (BooleanProperty, ListProperty, NumericProperty,
@@ -143,6 +144,7 @@ class BirthdayRow(BoxLayout):
     sub_text = StringProperty('')
     days_text = StringProperty('')
     days_color = ListProperty([0.18, 0.70, 0.40, 1])
+    today = BooleanProperty(False)      # عيد ميلاده اليوم: بطاقة مميزة
 
 
 DAYS_GREEN = [0.18, 0.70, 0.40, 1]
@@ -589,6 +591,9 @@ class SettingsScreen(Screen):
 class BirthdaysScreen(Screen):
     birth_str = StringProperty('')
     rise = NumericProperty(0)  # 0 = اللوڨو مخبّأ، 1 = ظاهر
+    _confetti_shown = False    # يظهر التأثير الاحتفالي مرة واحدة في كل تشغيل للتطبيق
+    _confetti_ev = None
+    _confetti_group = None
 
     def on_kv_post(self, base_widget):
         Clock.schedule_once(self.refresh_list, 0.2)
@@ -597,6 +602,9 @@ class BirthdaysScreen(Screen):
     def on_pre_enter(self, *args):
         self.refresh_list()
         self.queue_intro()
+
+    def on_leave(self, *args):
+        self.stop_confetti()
 
     def queue_intro(self):
         Clock.unschedule(self.play_intro)
@@ -626,6 +634,17 @@ class BirthdaysScreen(Screen):
                 continue
 
         rows.sort(key=lambda r: r[0])
+        today_names = [r[2] for r in rows if r[0] == 0]
+        if today_names:
+            try:
+                names = ', '.join(fix_arabic(n) for n in today_names)
+                layout.add_widget(Factory.TodayBanner(text='Happy birthday!  ' + names))
+            except Exception as e:
+                if core:
+                    core.log(f"today banner: {e}")
+            if not BirthdaysScreen._confetti_shown:
+                BirthdaysScreen._confetti_shown = True
+                Clock.schedule_once(self.play_confetti, 0.6)
         for days_left, age, name, date_str in rows:
             days_text, days_color = days_style(days_left)
             layout.add_widget(BirthdayRow(
@@ -635,7 +654,65 @@ class BirthdaysScreen(Screen):
                 sub_text=f"Turns {age}  |  {date_str}",
                 days_text=days_text,
                 days_color=days_color,
+                today=(days_left == 0),
             ))
+
+    def stop_confetti(self):
+        if self._confetti_ev is not None:
+            try:
+                self._confetti_ev.cancel()
+            except Exception:
+                pass
+            self._confetti_ev = None
+        if self._confetti_group is not None:
+            try:
+                self.canvas.after.remove(self._confetti_group)
+            except Exception:
+                pass
+            self._confetti_group = None
+
+    def play_confetti(self, *args):
+        """قصاصات ملونة تتساقط ثلاث ثوانٍ فوق الشاشة ثم تختفي (لا تعترض اللمس)."""
+        try:
+            import random
+            from kivy.graphics import Color, InstructionGroup, Rectangle
+            self.stop_confetti()
+            w, h = self.width, self.height
+            if w < 50 or h < 50:
+                return
+            group = InstructionGroup()
+            parts = []
+            for _ in range(48):
+                group.add(Color(random.uniform(0.45, 1), random.uniform(0.3, 1),
+                                random.uniform(0.3, 1), 1))
+                size = dp(random.randint(6, 10))
+                x = random.uniform(0, w)
+                y = h + random.uniform(0, h * 0.4)
+                rect = Rectangle(pos=(self.x + x, self.y + y), size=(size, size * 0.6))
+                group.add(rect)
+                parts.append([rect, x, y, random.uniform(0.5, 1.1) * h * 0.55,
+                              random.uniform(0, 6.28), random.uniform(1.5, 3.5)])
+            self.canvas.after.add(group)
+            self._confetti_group = group
+            state = {'t': 0.0}
+
+            def step(dt):
+                import math
+                state['t'] += dt
+                t = state['t']
+                for rect, x, y, speed, ph, freq in parts:
+                    rect.pos = (self.x + x + math.sin(t * freq + ph) * dp(18),
+                                self.y + y - speed * t)
+                if t >= 3.2:
+                    self.stop_confetti()
+                    return False
+                return True
+
+            self._confetti_ev = Clock.schedule_interval(step, 1 / 30.)
+        except Exception as e:
+            if core:
+                core.log(f"confetti: {e}")
+            self.stop_confetti()
 
     def open_date_picker(self):
         DatePopup(
