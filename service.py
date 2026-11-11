@@ -3,7 +3,8 @@ from datetime import datetime
 
 import core
 
-core.log("service started")
+import os
+core.log(f"service started v3 pid={os.getpid()}")
 
 # خدمة خلفية: تفحص كل 10 دقائق. الدالة check_and_notify تحترم الساعة المختارة في الإعدادات
 # (لا ترسل قبلها)، وترسل كل موعد مرة واحدة فقط في اليوم.
