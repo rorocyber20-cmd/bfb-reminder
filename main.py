@@ -1030,8 +1030,10 @@ class BFBApp(App):
             core.log(f"start check: {e}")
         try:
             from android import AndroidService
+            core.log("service: app asks to start the service")
             svc = AndroidService('BFB Reminder', 'تذكير أعياد الميلاد يعمل')
             svc.start('service started')
+            core.log("service: start call returned")
         except Exception as e:
             core.log(f"service error: {e}")
 
