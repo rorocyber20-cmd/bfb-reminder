@@ -834,9 +834,11 @@ class BFBApp(App):
     def show_service_log(self):
         """يعرض آخر أسطر سجل الخدمة: هل تعمل في الخلفية؟ ومتى آخر فحص؟"""
         try:
-            lines = core.read_log(6)
+            lines = [ln for ln in core.read_log(400) if 'service' in ln][-5:]
             if not lines:
-                self.show_status('Log is empty: the background service has not run yet.')
+                self.show_status('No service lines in the log: the background service has not '
+                                 'run (or it runs an old version). Close the app, wait 15 '
+                                 'minutes, and check again.')
                 return
             short = []
             for ln in lines:
