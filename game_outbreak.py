@@ -270,7 +270,8 @@ class OutbreakMixin:
     def show_ob_rshow(self, box):
         app = App.get_running_app()
         player = self.ob_players[self.ob_ri]
-        box.add_widget(self.label(self.ob_nm(player), fs=22, bold=True, color=app.primary_color))
+        box.add_widget(self.label(self.wrap_user(player, 22, 100), fs=22, bold=True,
+                                  color=app.primary_color))
         hidden = self.ob('hidden', 16)
         info = self.label(hidden, fs=20, bold=True, color=app.muted_color)
         box.add_widget(info)
