@@ -283,15 +283,6 @@ HELP_TEXT = {
                 'The reminder arrives at the hour you chose, or up to about 10 '
                 'minutes later. Open the app once after installing or updating.',
             ]),
-            ('tips', 'Tips', [
-                'Reminders arrive 7 days and 1 day before each birthday. In Settings '
-                'you can turn each one on or off and choose the time.',
-                'On Xiaomi / Redmi phones: allow Autostart for BFB and set '
-                'Battery to No restrictions, or reminders may not arrive.',
-                'No notifications? Phone Settings, then Apps, then BFB, then '
-                'Notifications.',
-                'New phone? Export a backup before, and import it after.',
-            ]),
         ],
     },
     'ar': {
@@ -341,16 +332,6 @@ HELP_TEXT = {
                 'لا تستعمل "إيقاف إجباري"، وإذا فعلت فافتح BFB مرة أخرى.',
                 'يصل التذكير في الساعة التي اخترتها أو بعدها بنحو 10 دقائق '
                 'كحد أقصى. افتح التطبيق مرة واحدة بعد التثبيت أو التحديث.',
-            ]),
-            ('tips', 'نصائح', [
-                'تصلك التذكيرات قبل أسبوع وقبل يوم من كل عيد ميلاد. ومن الإعدادات '
-                'يمكنك تشغيل أو إيقاف كل واحد واختيار الساعة.',
-                'في هواتف Xiaomi وRedmi: فعّل التشغيل التلقائي (Autostart) '
-                'للتطبيق واجعل البطارية بدون قيود، وإلا قد لا تصل '
-                'التذكيرات.',
-                'لا تظهر الإشعارات؟ إعدادات الهاتف ثم التطبيقات ثم BFB '
-                'ثم الإشعارات.',
-                'هاتف جديد؟ صدّر نسخة احتياطية قبل التغيير واستوردها بعده.',
             ]),
         ],
     },
