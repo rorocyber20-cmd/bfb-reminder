@@ -221,7 +221,7 @@ class HangmanMixin:
     def show_hm_play(self, box):
         app = App.get_running_app()
         self.hm_live = True
-        cname = self.shape(cat_name(self.hm_word[2], self.is_ar()), 16, 100)
+        cname = cat_name(self.hm_word[2], self.is_ar())          # خام: hm_t يشكّل الجملة كلها مرة واحدة
         box.add_widget(self.label(self.hm_t('hint', 17, 60, cat=cname), fs=17, bold=True,
                                   color=app.primary_color))
         self._hm_info = self.label(self.hm_t('mistakes', 14, 60, n=self.hm_wrong, m=MAX_WRONG),
