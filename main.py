@@ -1010,8 +1010,23 @@ class BFBApp(App):
             except Exception as e:
                 core.log(f"permission error: {e}")
                 self.start_background()
+        elif platform == 'ios':
+            core.ios_request_permission()
+            Clock.schedule_once(lambda dt: core.ios_schedule(), 2)
         else:
             Clock.schedule_once(lambda dt: self.show_status(core.check_and_notify()), 1)
+
+    def on_pause(self):
+        # آيفون: نعيد جدولة الإشعارات عند الخروج من التطبيق (بعد أي تعديل في التواريخ)
+        if platform == 'ios':
+            try:
+                core.ios_schedule()
+            except Exception as e:
+                core.log(f"on_pause: {e}")
+        return True
+
+    def on_resume(self):
+        pass
 
     def start_background(self, *args):
         try:
