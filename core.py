@@ -12,7 +12,17 @@ def data_dir():
         from android.storage import app_storage_path
         return app_storage_path()
     except Exception:
-        return os.path.dirname(os.path.abspath(__file__))
+        pass
+    try:
+        from kivy.utils import platform
+        if platform == 'ios':
+            # على آيفون مجلد التطبيق نفسه للقراءة فقط، فنكتب في Documents
+            d = os.path.join(os.path.expanduser('~'), 'Documents')
+            os.makedirs(d, exist_ok=True)
+            return d
+    except Exception:
+        pass
+    return os.path.dirname(os.path.abspath(__file__))
 
 
 DATA_FILE = os.path.join(data_dir(), 'birthdays.json')
@@ -224,6 +234,9 @@ def send_notification(title, message):
     except Exception:
         platform = ''
 
+    if platform == 'ios':
+        return False, 'iOS uses scheduled notifications'
+
     if platform != 'android':
         try:
             from plyer import notification
@@ -285,6 +298,84 @@ def send_notification(title, message):
         return True, ''
     except Exception as e:
         log(f"send_notification failed: {e}")
+        return False, str(e)
+
+
+# ---------------------------------------------------------------
+# آيفون: لا توجد خدمة خلفية، فنجدول الإشعارات مسبقًا عند النظام
+# (UNUserNotificationCenter). تتكرر كل سنة، ونعيد الجدولة كلما فتحت التطبيق أو خرجت منه.
+# ---------------------------------------------------------------
+def ios_request_permission():
+    try:
+        from pyobjus import autoclass
+        center = autoclass('UNUserNotificationCenter').currentNotificationCenter()
+        center.requestAuthorizationWithOptions_completionHandler_(7, None)  # alert+sound+badge
+        return True
+    except Exception as e:
+        log(f"ios permission: {e}")
+        return False
+
+
+def ios_plan():
+    """قائمة (id, عنوان, نص, شهر, يوم, ساعة) لكل التنبيهات المطلوبة. دالة خالصة قابلة للاختبار."""
+    from datetime import timedelta
+    prefs = load_settings()
+    offsets = []
+    if prefs.get('notify_week', 1):
+        offsets.append(7)
+    if prefs.get('notify_day', 1):
+        offsets.append(1)
+    hour = notify_hour()
+    plan = []
+    for idx, item in enumerate(load_birthdays()):
+        try:
+            d = days_until(item['date'])
+        except Exception:
+            continue
+        target = date.today() + timedelta(days=d)
+        for off in offsets:
+            fire = target - timedelta(days=off)
+            if off == 7:
+                msg = f"باقي أسبوع واحد على عيد ميلاد: {item['name']}!"
+            else:
+                msg = f"باقي يوم واحد فقط على عيد ميلاد: {item['name']}!"
+            plan.append(((d - off) % 366, f"bfb_{idx}_{off}", "تنبيه عيد ميلاد 🎂", msg,
+                         fire.month, fire.day, hour))
+    plan.sort()
+    # آيفون يسمح بـ64 إشعارًا مجدولًا فقط: نأخذ الأقرب
+    return [p[1:] for p in plan[:60]]
+
+
+def ios_schedule():
+    """يمسح المجدول القديم ويجدول من جديد. يرجع (True,'') أو (False,سبب)."""
+    try:
+        from pyobjus import autoclass, objc_str
+        center = autoclass('UNUserNotificationCenter').currentNotificationCenter()
+        center.removeAllPendingNotificationRequests()
+        Content = autoclass('UNMutableNotificationContent')
+        Sound = autoclass('UNNotificationSound')
+        Comps = autoclass('NSDateComponents')
+        Trigger = autoclass('UNCalendarNotificationTrigger')
+        Request = autoclass('UNNotificationRequest')
+        n = 0
+        for ident, title, msg, month, day, hour in ios_plan():
+            c = Content.alloc().init()
+            c.setTitle_(objc_str(title))
+            c.setBody_(objc_str(msg))
+            c.setSound_(Sound.defaultSound())
+            dc = Comps.alloc().init()
+            dc.setMonth_(month)
+            dc.setDay_(day)
+            dc.setHour_(hour)
+            dc.setMinute_(0)
+            trig = Trigger.triggerWithDateMatchingComponents_repeats_(dc, True)
+            req = Request.requestWithIdentifier_content_trigger_(objc_str(ident), c, trig)
+            center.addNotificationRequest_withCompletionHandler_(req, None)
+            n += 1
+        log(f"ios scheduled {n} notifications")
+        return True, ''
+    except Exception as e:
+        log(f"ios schedule failed: {e}")
         return False, str(e)
 
 
