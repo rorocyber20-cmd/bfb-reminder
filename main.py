@@ -134,7 +134,20 @@ class CustomTextInput(TextInput):
 
 
 class LogoBox(StencilView, FloatLayout):
-    """يقصّ ما يخرج عن حدوده، فيبدو اللوڨو طالعًا من وراء خانة الاسم."""
+    """يقصّ ما يخرج عن حدوده، فيبدو اللوڨو طالعًا من وراء خانة الاسم.
+    لمس القط يجعله يتفاعل (ينفض أذنه أو يهتز)."""
+
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos) and self.children:
+            img = self.children[0]
+            screen = self.parent
+            while screen is not None and not hasattr(screen, 'cat_react'):
+                screen = screen.parent
+            if screen is not None and img.width > 0:
+                fx_ = (touch.x - img.x) / img.width          # 0 يسار .. 1 يمين
+                fy_ = (touch.y - img.y) / img.height         # 0 أسفل .. 1 أعلى
+                screen.cat_react(fx_, fy_)
+        return super().on_touch_down(touch)
 
 
 class BirthdayRow(BoxLayout):
@@ -529,6 +542,9 @@ class SettingsScreen(Screen):
 class BirthdaysScreen(Screen):
     birth_str = StringProperty('')
     rise = NumericProperty(0)  # 0 = اللوڨو مخبّأ، 1 = ظاهر
+    tilt = NumericProperty(0)      # ميلان القط (درجات)
+    squash = NumericProperty(1)    # تمدد عمودي
+    squash_x = NumericProperty(1)  # تمدد أفقي
     _confetti_shown = False    # يظهر التأثير الاحتفالي مرة واحدة في كل تشغيل للتطبيق
     _confetti_ev = None
     _confetti_group = None
@@ -548,6 +564,28 @@ class BirthdaysScreen(Screen):
         Clock.unschedule(self.play_intro)
         self.rise = 0
         Clock.schedule_once(self.play_intro, 0.15)
+
+    def cat_react(self, fx_, fy_):
+        """رد فعل خفيف عند لمس القط: الأذن اليسرى/اليمنى تُنفض، وغير ذلك يهتز."""
+        if self.rise < 0.8:
+            return
+        Animation.cancel_all(self, 'tilt', 'squash', 'squash_x')
+        self.tilt, self.squash, self.squash_x = 0, 1, 1
+        if fy_ > 0.66 and (0.08 < fx_ < 0.42 or 0.58 < fx_ < 0.92):
+            a = 9 if fx_ < 0.5 else -9          # الأذن اليسرى: يميل نحوها
+            anim = (Animation(tilt=a, duration=0.08) + Animation(tilt=-a * 0.6, duration=0.10)
+                    + Animation(tilt=a * 0.35, duration=0.09) + Animation(tilt=0, duration=0.10))
+            anim.start(self)
+        else:
+            (Animation(squash=0.93, squash_x=1.04, duration=0.07)
+             + Animation(squash=1.04, squash_x=0.98, duration=0.10)
+             + Animation(squash=1, squash_x=1, duration=0.10)).start(self)
+        try:
+            import fx
+            fx.buzz(20)
+            fx.play('tap', 0.5)
+        except Exception:
+            pass
 
     def play_intro(self, *args):
         Animation.cancel_all(self, 'rise')
